@@ -85,10 +85,15 @@ export const generateFilm = () => {
     time: generateTime(),
     date: generateDate(),
     genre: generateGenre(),
-    comments: [],
+    comments: getRandomInteger(0, 100),
     isFavorite: Boolean(getRandomInteger(0, 1)),
     isViewed: Boolean(getRandomInteger(0, 1)),
     isWatchlist: Boolean(getRandomInteger(0, 1)),
-    rating: generateRating(0,10)
+    rating: generateRating(0,9),
+    age: generateRating(0,18),
+    regisseur: ``,
+    screenwriters: ``,
+    actors: ``,
+    country: ``
   };
 };
