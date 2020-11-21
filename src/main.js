@@ -4,13 +4,14 @@ import {createFilmListTemplate} from "./view/films-list";
 import {createFooterStatisticsTemplate} from "./view/count-films";
 import {createCardFilmTemplate} from "./view/film-card";
 import {generateFilm} from "./mock/film";
-import {createLoadmoreTemplate} from  "./view/loadmore";
+import {createLoadmoreTemplate} from "./view/loadmore";
 
 const FILM_COUNT = 48;
 const FILM_PER_PAGE = 5;
 const FILM_RATED_CONT = 2;
 
 const films = new Array(FILM_COUNT).fill().map(generateFilm);
+let filteredFilms = films;
 
 const compareValues = (key, order) => {
   return function innerSort(a, b) {
@@ -70,31 +71,54 @@ const filmListRated = siteMainElement.querySelector(`.js-film-list-rated`);
 const filmListCommented = siteMainElement.querySelector(`.js-film-list-commented`);
 const filmsContainer = siteMainElement.querySelector(`.js-films-container`);
 
-render(filmList, createCardFilmTemplate(films[0]), `beforeend`);
+render(filmList, createCardFilmTemplate(filteredFilms[0]), `beforeend`);
 
-for (let i = 1; i < Math.min(films.length, FILM_PER_PAGE); i++) {
+for (let i = 1; i < Math.min(filteredFilms.length, FILM_PER_PAGE); i++) {
   render(filmList, createCardFilmTemplate(films[i]), `beforeend`);
 }
 
-if (films.length > FILM_PER_PAGE) {
+if (filteredFilms.length > FILM_PER_PAGE) {
   let renderedFilmsCount = FILM_PER_PAGE;
   render(filmsContainer, createLoadmoreTemplate(), `beforeend`);
   const loadMoreButton = filmsContainer.querySelector(`.js-loadmore`);
-
   loadMoreButton.addEventListener(`click`, (evt) => {
     evt.preventDefault();
-
-    films
+    filteredFilms
       .slice(renderedFilmsCount, renderedFilmsCount + FILM_PER_PAGE)
       .forEach((film) => render(filmList, createCardFilmTemplate(film), `beforeend`));
 
     renderedFilmsCount += FILM_PER_PAGE;
-
-    if (renderedFilmsCount >= films.length) {
-      loadMoreButton.remove();
+    if (renderedFilmsCount >= filteredFilms.length) {
+      loadMoreButton.style.display = `none`;
     }
-
   });
+  const filterBtns = siteMainElement.querySelectorAll(`.main-navigation__item`);
+
+  for (let btn of filterBtns) {
+    btn.addEventListener(`click`, function (evt) {
+      evt.preventDefault();
+
+      renderedFilmsCount = FILM_PER_PAGE;
+      let id = this.getAttribute(`id`);
+      let param = this.getAttribute(`data-sort`);
+      document.querySelector(`.main-navigation__item--active`).classList.remove(`main-navigation__item--active`);
+      document.querySelector(`#` + id).classList.add(`main-navigation__item--active`);
+      filteredFilms = films;
+      if (filteredFilms.length > FILM_PER_PAGE) {
+        loadMoreButton.style.display = `block`;
+      }
+      if (param !== `all`) {
+        filteredFilms = filteredFilms.filter((film) => film[param] === true);
+      }
+      filmList.innerHTML = ``;
+
+      render(filmList, createCardFilmTemplate(filteredFilms[0]), `beforeend`);
+
+      for (let i = 1; i < Math.min(filteredFilms.length, FILM_PER_PAGE); i++) {
+        render(filmList, createCardFilmTemplate(filteredFilms[i]), `beforeend`);
+      }
+    });
+  }
 }
 
 for (let i = 0; i < FILM_RATED_CONT; i++) {
