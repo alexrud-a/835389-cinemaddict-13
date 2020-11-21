@@ -5,6 +5,7 @@ import {createFooterStatisticsTemplate} from "./view/count-films";
 import {createCardFilmTemplate} from "./view/film-card";
 import {generateFilm} from "./mock/film";
 import {createLoadmoreTemplate} from "./view/loadmore";
+import {createTemplatePopupFilm} from "./view/popup";
 
 const FILM_COUNT = 48;
 const FILM_PER_PAGE = 5;
@@ -58,6 +59,7 @@ const render = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
 };
 
+const siteBody = document.querySelector(`body`);
 const siteMainElement = document.querySelector(`.main`);
 const siteFooterStatistics = document.querySelector(`.footer__statistics`);
 
@@ -99,10 +101,9 @@ if (filteredFilms.length > FILM_PER_PAGE) {
       evt.preventDefault();
 
       renderedFilmsCount = FILM_PER_PAGE;
-      let id = this.getAttribute(`id`);
       let param = this.getAttribute(`data-sort`);
       document.querySelector(`.main-navigation__item--active`).classList.remove(`main-navigation__item--active`);
-      document.querySelector(`#` + id).classList.add(`main-navigation__item--active`);
+      this.classList.add(`main-navigation__item--active`);
       filteredFilms = films;
       if (filteredFilms.length > FILM_PER_PAGE) {
         loadMoreButton.style.display = `block`;
@@ -110,6 +111,31 @@ if (filteredFilms.length > FILM_PER_PAGE) {
       if (param !== `all`) {
         filteredFilms = filteredFilms.filter((film) => film[param] === true);
       }
+      filmList.innerHTML = ``;
+
+      render(filmList, createCardFilmTemplate(filteredFilms[0]), `beforeend`);
+
+      for (let i = 1; i < Math.min(filteredFilms.length, FILM_PER_PAGE); i++) {
+        render(filmList, createCardFilmTemplate(filteredFilms[i]), `beforeend`);
+      }
+    });
+  }
+
+  const sortedBtns = siteMainElement.querySelectorAll(`.sort__button`);
+
+  for (let btn of sortedBtns) {
+    btn.addEventListener(`click`, function (evt) {
+      evt.preventDefault();
+
+      document.querySelector(`.sort__button--active`).classList.remove(`sort__button--active`);
+      this.classList.add(`sort__button--active`);
+      let param = this.getAttribute(`data-sort`);
+
+      filteredFilms = films;
+      if (param !== `default`) {
+        filteredFilms = filteredFilms.sort(compareValues(param, `desc`));
+      }
+
       filmList.innerHTML = ``;
 
       render(filmList, createCardFilmTemplate(filteredFilms[0]), `beforeend`);
@@ -128,3 +154,18 @@ for (let i = 0; i < FILM_RATED_CONT; i++) {
 for (let i = 0; i < FILM_RATED_CONT; i++) {
   render(filmListCommented, createCardFilmTemplate(filmsCommented()[i]), `beforeend`);
 }
+
+const filmCards = document.querySelectorAll(`.film-card`);
+
+for (let card of filmCards) {
+  card.addEventListener(`click`, function (evt) {
+    evt.preventDefault();
+    render(siteBody, createTemplatePopupFilm(), `beforeend`);
+  });
+}
+
+document.addEventListener(`click`, (event) => {
+  if (event.target.className === `film-details__close-btn`) {
+    document.querySelector(`.film-details`).remove();
+  }
+});
