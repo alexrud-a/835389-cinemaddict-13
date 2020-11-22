@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 
 export const createCardFilmTemplate = (film) => {
-  const {info, time, date, rating, isFavorite, isViewed, isWatchlist, genre, comments} = film;
+  const {id, info, time, date, rating, isFavorite, isViewed, isWatchlist, genre, comments} = film;
 
   const year = dayjs(date).format(`YYYY`);
 
@@ -17,7 +17,7 @@ export const createCardFilmTemplate = (film) => {
     ? `film-card__controls-item--active`
     : ``;
 
-  return `<article class="film-card">
+  return `<article class="film-card" id="${id}">
           <h3 class="film-card__title">${info.title}</h3>
           <p class="film-card__rating">${rating}</p>
           <p class="film-card__info">

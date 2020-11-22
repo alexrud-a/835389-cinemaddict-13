@@ -1,4 +1,8 @@
-export const createTemplatePopupFilm = () => {
+import dayjs from "dayjs";
+
+export const createTemplatePopupFilm = (film) => {
+  const {info, time, date, rating, age, isFavorite, isViewed, isWatchlist, genre, comments} = film;
+  const fullDate = dayjs(date).format(`DD MMMM YYYY`);
   return `<section class="film-details">
   <form class="film-details__inner" action="" method="get">
     <div class="film-details__top-container">
@@ -7,20 +11,20 @@ export const createTemplatePopupFilm = () => {
       </div>
       <div class="film-details__info-wrap">
         <div class="film-details__poster">
-          <img class="film-details__poster-img" src="./images/posters/the-great-flamarion.jpg" alt="">
+          <img class="film-details__poster-img" src="./images/posters/${info.poster}" alt="">
 
-          <p class="film-details__age">18+</p>
+          <p class="film-details__age">${age}+</p>
         </div>
 
         <div class="film-details__info">
           <div class="film-details__info-head">
             <div class="film-details__title-wrap">
-              <h3 class="film-details__title">The Great Flamarion</h3>
+              <h3 class="film-details__title">${info.title}</h3>
               <p class="film-details__title-original">Original: The Great Flamarion</p>
             </div>
 
             <div class="film-details__rating">
-              <p class="film-details__total-rating">8.9</p>
+              <p class="film-details__total-rating">${rating}</p>
             </div>
           </div>
 
@@ -39,11 +43,11 @@ export const createTemplatePopupFilm = () => {
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Release Date</td>
-              <td class="film-details__cell">30 March 1945</td>
+              <td class="film-details__cell">${fullDate}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Runtime</td>
-              <td class="film-details__cell">1h 18m</td>
+              <td class="film-details__cell">${time}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Country</td>
@@ -78,7 +82,7 @@ export const createTemplatePopupFilm = () => {
 
     <div class="film-details__bottom-container">
       <section class="film-details__comments-wrap">
-        <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">4</span></h3>
+        <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
 
         <ul class="film-details__comments-list">
           <li class="film-details__comment">

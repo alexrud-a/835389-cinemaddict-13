@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import {nanoid} from 'nanoid';
 
 const getRandomInteger = (a = 0, b = 1) => {
   const lower = Math.ceil(Math.min(a, b));
@@ -81,6 +82,7 @@ const generateGenre = () => {
 
 export const generateFilm = () => {
   return {
+    id: nanoid(),
     info: generateInfo(),
     time: generateTime(),
     date: generateDate(),
@@ -90,7 +92,7 @@ export const generateFilm = () => {
     isViewed: Boolean(getRandomInteger(0, 1)),
     isWatchlist: Boolean(getRandomInteger(0, 1)),
     rating: generateRating(0,9),
-    age: generateRating(0,18),
+    age: getRandomInteger(0,18),
     regisseur: ``,
     screenwriters: ``,
     actors: ``,

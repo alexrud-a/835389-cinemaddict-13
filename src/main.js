@@ -12,7 +12,6 @@ const FILM_PER_PAGE = 5;
 const FILM_RATED_CONT = 2;
 
 const films = new Array(FILM_COUNT).fill().map(generateFilm);
-let filteredFilms = films;
 
 const compareValues = (key, order) => {
   return function innerSort(a, b) {
@@ -36,6 +35,8 @@ const compareValues = (key, order) => {
     );
   };
 };
+
+let filteredFilms = films.sort(compareValues(`id`, `asc`));
 
 const filmsRated = () => {
   return films.sort(compareValues(`rating`, `desc`)).slice(0,FILM_RATED_CONT);
@@ -130,10 +131,10 @@ if (filteredFilms.length > FILM_PER_PAGE) {
       document.querySelector(`.sort__button--active`).classList.remove(`sort__button--active`);
       this.classList.add(`sort__button--active`);
       let param = this.getAttribute(`data-sort`);
-
-      filteredFilms = films;
       if (param !== `default`) {
         filteredFilms = filteredFilms.sort(compareValues(param, `desc`));
+      } else {
+        filteredFilms = filteredFilms.sort(compareValues(`id`, `asc`));
       }
 
       filmList.innerHTML = ``;
@@ -160,7 +161,9 @@ const filmCards = document.querySelectorAll(`.film-card`);
 for (let card of filmCards) {
   card.addEventListener(`click`, function (evt) {
     evt.preventDefault();
-    render(siteBody, createTemplatePopupFilm(), `beforeend`);
+    let id = this.getAttribute(`id`);
+    let film = films.filter((item) => item.id === id)[0];
+    render(siteBody, createTemplatePopupFilm(film), `beforeend`);
   });
 }
 
