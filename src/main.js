@@ -169,9 +169,7 @@ for (let i = 0; i < FILM_RATED_CONT; i++) {
 
 siteBody.addEventListener(`click`, function (event) {
   let target = event.target;
-  if (target.getAttribute(`class`) !== `film-card__comments`) {
-    return;
-  } else {
+  if (event.target.className === `film-card__comments`) {
     showpopup(target.closest(`.film-card`).getAttribute(`id`));
   }
 });
