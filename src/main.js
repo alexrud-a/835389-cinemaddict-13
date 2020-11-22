@@ -156,18 +156,32 @@ for (let i = 0; i < FILM_RATED_CONT; i++) {
   render(filmListCommented, createCardFilmTemplate(filmsCommented()[i]), `beforeend`);
 }
 
-const filmCards = document.querySelectorAll(`.film-card`);
+// const filmCards = document.querySelectorAll(`.film-card`);
+//
+// for (let card of filmCards) {
+//   card.addEventListener(`click`, function (evt) {
+//     evt.preventDefault();
+//     let id = this.getAttribute(`id`);
+//     let film = films.filter((item) => item.id === id)[0];
+//     render(siteBody, createTemplatePopupFilm(film), `beforeend`);
+//   });
+// }
 
-for (let card of filmCards) {
-  card.addEventListener(`click`, function (evt) {
-    evt.preventDefault();
-    let id = this.getAttribute(`id`);
-    let film = films.filter((item) => item.id === id)[0];
-    render(siteBody, createTemplatePopupFilm(film), `beforeend`);
-  });
-}
+siteBody.addEventListener(`click`, function (event) {
+  let target = event.target;
+  if (target.getAttribute(`class`) !== `film-card__comments`) {
+    return;
+  } else {
+    showpopup(target.closest(`.film-card`).getAttribute(`id`));
+  }
+});
 
-document.addEventListener(`click`, (event) => {
+const showpopup = (id) => {
+  let film = films.filter((item) => item.id === id)[0];
+  render(siteBody, createTemplatePopupFilm(film), `beforeend`);
+};
+
+siteBody.addEventListener(`click`, (event) => {
   if (event.target.className === `film-details__close-btn`) {
     document.querySelector(`.film-details`).remove();
   }
