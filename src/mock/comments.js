@@ -18,40 +18,40 @@ const generateDate = () => {
 };
 
 const generateComment = () => {
-  const comment = [
+  const comments = [
     {
       text: `Interesting setting and a good cast`,
-      autor: `Tim Macoveev`,
+      author: `Tim Macoveev`,
       emotion: `smile`
     },
     {
       text: `Booooooooooring`,
-      autor: `John Doe`,
+      author: `John Doe`,
       emotion: `sleeping`
     },
     {
       text: `Very very old. Meh`,
-      autor: `Elis`,
+      author: `Elis`,
       emotion: `puke`
     },
     {
       text: `Almost two hours? Seriously?`,
-      autor: `Alex`,
+      author: `Alex`,
       emotion: `angry`
     },
     {
       text: `Very very old. Meh`,
-      autor: `Suzan`,
+      author: `Suzan`,
       emotion: `sleeping`
     }
   ];
 
-  const randomIndex = getRandomInteger(0, info.length - 1);
+  const randomIndex = getRandomInteger(0, comments.length - 1);
 
-  return comment[randomIndex];
+  return comments[randomIndex];
 };
 
-export const comments = () => {
+export const generateComments = () => {
   return {
     id: nanoid(),
     info: generateComment(),

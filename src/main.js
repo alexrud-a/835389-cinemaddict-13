@@ -102,7 +102,7 @@ if (filteredFilms.length > FILM_PER_PAGE) {
       evt.preventDefault();
 
       renderedFilmsCount = FILM_PER_PAGE;
-      let param = this.getAttribute(`data-sort`);
+      let param = btn.getAttribute(`data-sort`);
       document.querySelector(`.main-navigation__item--active`).classList.remove(`main-navigation__item--active`);
       this.classList.add(`main-navigation__item--active`);
       filteredFilms = films;
@@ -129,8 +129,8 @@ if (filteredFilms.length > FILM_PER_PAGE) {
       evt.preventDefault();
 
       document.querySelector(`.sort__button--active`).classList.remove(`sort__button--active`);
-      this.classList.add(`sort__button--active`);
-      let param = this.getAttribute(`data-sort`);
+      btn.classList.add(`sort__button--active`);
+      let param = btn.getAttribute(`data-sort`);
       if (param !== `default`) {
         filteredFilms = filteredFilms.sort(compareValues(param, `desc`));
       } else {
@@ -158,7 +158,7 @@ for (let i = 0; i < FILM_RATED_CONT; i++) {
 
 siteBody.addEventListener(`click`, function (event) {
   let target = event.target;
-  if (event.target.className === `film-card__comments`) {
+  if (target.classList.contains(`js-open-popup`) === true) {
     showpopup(target.closest(`.film-card`).getAttribute(`id`));
   }
 });
@@ -169,7 +169,8 @@ const showpopup = (id) => {
 };
 
 siteBody.addEventListener(`click`, (event) => {
-  if (event.target.className === `film-details__close-btn`) {
+  let target = event.target;
+  if (target.classList.contains(`film-details__close-btn`) === true) {
     document.querySelector(`.film-details`).remove();
   }
 });
