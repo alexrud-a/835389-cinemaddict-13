@@ -21,8 +21,7 @@ export const createCardFilmTemplate = (film) => {
     let slisedDescription;
     if (description.length > 140) {
       slisedDescription = description.slice(0, 140) + `...`;
-    }
-    else {
+    } else {
       slisedDescription = description;
     }
     return slisedDescription;
