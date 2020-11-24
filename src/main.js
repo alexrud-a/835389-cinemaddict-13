@@ -104,7 +104,7 @@ if (filteredFilms.length > FILM_PER_PAGE) {
       renderedFilmsCount = FILM_PER_PAGE;
       let param = btn.getAttribute(`data-sort`);
       document.querySelector(`.main-navigation__item--active`).classList.remove(`main-navigation__item--active`);
-      this.classList.add(`main-navigation__item--active`);
+      btn.classList.add(`main-navigation__item--active`);
       filteredFilms = films;
       if (filteredFilms.length > FILM_PER_PAGE) {
         loadMoreButton.style.display = `block`;
@@ -131,6 +131,9 @@ if (filteredFilms.length > FILM_PER_PAGE) {
       document.querySelector(`.sort__button--active`).classList.remove(`sort__button--active`);
       btn.classList.add(`sort__button--active`);
       let param = btn.getAttribute(`data-sort`);
+      if (filteredFilms.length > FILM_PER_PAGE) {
+        loadMoreButton.style.display = `block`;
+      }
       if (param !== `default`) {
         filteredFilms = filteredFilms.sort(compareValues(param, `desc`));
       } else {
