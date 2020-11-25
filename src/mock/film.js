@@ -134,8 +134,8 @@ export const generateFilm = () => {
     info: generateInfo(),
     description: generateDescription(),
     time: generateTime(),
-    date: generateDate(),
-    genre: choise(genres, getRandomInteger(0, genres.length - 1)),
+    date: new Date(getRandomInteger(0, new Date())),
+    genre: choise(genres, getRandomInteger(1, genres.length - 1)),
     comments: generateRandomComments(),
     isFavorite: Boolean(getRandomInteger(0, 1)),
     isViewed: Boolean(getRandomInteger(0, 1)),
@@ -143,8 +143,8 @@ export const generateFilm = () => {
     rating: generateRating(0, 9),
     age: getRandomInteger(0, 18),
     regisseur: choise(regisseurs, 1),
-    screenwriters: choise(screenwriters, getRandomInteger(0, screenwriters.length - 1)),
-    actors: choise(actors, getRandomInteger(0, actors.length - 1)),
-    country: choise(countries, getRandomInteger(0, countries.length - 1)),
+    screenwriters: choise(screenwriters, getRandomInteger(1, screenwriters.length - 1)),
+    actors: choise(actors, getRandomInteger(1, actors.length - 1)),
+    country: choise(countries, getRandomInteger(1, countries.length - 1)),
   };
 };

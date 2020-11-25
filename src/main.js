@@ -36,15 +36,14 @@ const compareValues = (key, order) => {
   };
 };
 
-let filteredFilms = films;
-filteredFilms.sort(compareValues(`id`, `asc`))
+let filteredFilms = films.slice().sort(compareValues(`id`, `asc`));
 
 const filmsRated = () => {
-  return films.sort(compareValues(`rating`, `desc`)).slice(0, FILM_RATED_COUNT);
+  return filteredFilms.sort(compareValues(`rating`, `desc`)).slice(0, FILM_RATED_COUNT);
 };
 
 const filmsCommented = () => {
-  return films.sort(compareValues(`comments`, `desc`)).slice(0, FILM_RATED_COUNT);
+  return filteredFilms.sort(compareValues(`comments`, `desc`)).slice(0, FILM_RATED_COUNT);
 };
 
 const filmsInfoSort = () => {
@@ -106,7 +105,7 @@ if (filteredFilms.length > FILM_PER_PAGE) {
       let param = btn.getAttribute(`data-sort`);
       document.querySelector(`.main-navigation__item--active`).classList.remove(`main-navigation__item--active`);
       btn.classList.add(`main-navigation__item--active`);
-      filteredFilms = films;
+      filteredFilms = films.slice();
       if (filteredFilms.length > FILM_PER_PAGE) {
         loadMoreButton.style.display = `block`;
       }
