@@ -6,6 +6,7 @@ import {createCardFilmTemplate} from "./view/film-card";
 import {generateFilm} from "./mock/film";
 import {createLoadmoreTemplate} from "./view/loadmore";
 import {createTemplatePopupFilm} from "./view/popup";
+import {createEmptyFilms} from "./view/empty-films";
 
 const FILM_COUNT = 48;
 const FILM_PER_PAGE = 5;
@@ -74,10 +75,14 @@ const filmListRated = siteMainElement.querySelector(`.js-film-list-rated`);
 const filmListCommented = siteMainElement.querySelector(`.js-film-list-commented`);
 const filmsContainer = siteMainElement.querySelector(`.js-films-container`);
 
-render(filmList, createCardFilmTemplate(filteredFilms[0]), `beforeend`);
+if (filteredFilms.length > 0) {
+  render(filmList, createCardFilmTemplate(filteredFilms[0]), `beforeend`);
 
-for (let i = 1; i < Math.min(filteredFilms.length, FILM_PER_PAGE); i++) {
-  render(filmList, createCardFilmTemplate(filteredFilms[i]), `beforeend`);
+  for (let i = 1; i < Math.min(filteredFilms.length, FILM_PER_PAGE); i++) {
+    render(filmList, createCardFilmTemplate(filteredFilms[i]), `beforeend`);
+  }
+} else {
+  render(filmList, createEmptyFilms(), `beforeend`);
 }
 
 if (filteredFilms.length > FILM_PER_PAGE) {

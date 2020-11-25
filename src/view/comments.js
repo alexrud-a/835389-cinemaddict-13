@@ -18,22 +18,17 @@ const createCommentTemplate = (comment) => {
 };
 
 const emoji = (emotion) => {
-  let imgComment;
   switch (emotion) {
     case `angry`:
-      imgComment = `angry.png`;
-      break;
+      return `angry.png`;
     case `puke`:
-      imgComment = `puke.png`;
-      break;
+      return `puke.png`;
     case `sleeping`:
-      imgComment = `sleeping.png`;
-      break;
+      return `sleeping.png`;
     case `smile`:
-      imgComment = `smile.png`;
-      break;
+      return `smile.png`;
   }
-  return imgComment;
+  return null;
 };
 
 export const createCommentsTemplate = (comments) => {
