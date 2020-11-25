@@ -84,8 +84,7 @@ const actors = [
 ];
 
 const choise = (arr, n) => {
-  const randomIndex = getRandomInteger(0, arr.length - 1);
-  return new Array(n).fill(null).map(() => arr[randomIndex]);
+  return new Array(n).fill(null).map(() => arr[getRandomInteger(0, arr.length - 1)]);
 };
 
 const generateDescription = () => {
