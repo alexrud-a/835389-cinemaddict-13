@@ -18,13 +18,13 @@ export const createCardFilmTemplate = (film) => {
     : ``;
 
   const sliceDescription = () => {
-    let slisedDescription;
+    let slicedDescription;
     if (description.length > 140) {
-      slisedDescription = description.slice(0, 140) + `...`;
+      slicedDescription = description.slice(0, 140) + `...`;
     } else {
-      slisedDescription = description;
+      slicedDescription = description;
     }
-    return slisedDescription;
+    return slicedDescription;
   };
   return `<article class="film-card" id="${id}">
           <h3 class="js-open-popup film-card__title">${info.title}</h3>

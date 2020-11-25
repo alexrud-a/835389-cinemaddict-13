@@ -9,7 +9,7 @@ import {createTemplatePopupFilm} from "./view/popup";
 
 const FILM_COUNT = 48;
 const FILM_PER_PAGE = 5;
-const FILM_RATED_CONT = 2;
+const FILM_RATED_COUNT = 2;
 
 const films = new Array(FILM_COUNT).fill().map(generateFilm);
 
@@ -36,21 +36,22 @@ const compareValues = (key, order) => {
   };
 };
 
-let filteredFilms = films.sort(compareValues(`id`, `asc`));
+let filteredFilms = films;
+filteredFilms.sort(compareValues(`id`, `asc`))
 
 const filmsRated = () => {
-  return films.sort(compareValues(`rating`, `desc`)).slice(0,FILM_RATED_CONT);
+  return films.sort(compareValues(`rating`, `desc`)).slice(0, FILM_RATED_COUNT);
 };
 
 const filmsCommented = () => {
-  return films.sort(compareValues(`comments`, `desc`)).slice(0,FILM_RATED_CONT);
+  return films.sort(compareValues(`comments`, `desc`)).slice(0, FILM_RATED_COUNT);
 };
 
 const filmsInfoSort = () => {
   const filmsInfo = {
-    watchlist: films.filter((item) => item.isWatchlist === true),
-    history: films.filter((item) => item.isViewed === true),
-    favorites: films.filter((item) => item.isFavorite === true),
+    watchlist: filteredFilms.filter((item) => item.isWatchlist),
+    history: filteredFilms.filter((item) => item.isViewed),
+    favorites: filteredFilms.filter((item) => item.isFavorite),
   };
 
   return filmsInfo;
@@ -77,7 +78,7 @@ const filmsContainer = siteMainElement.querySelector(`.js-films-container`);
 render(filmList, createCardFilmTemplate(filteredFilms[0]), `beforeend`);
 
 for (let i = 1; i < Math.min(filteredFilms.length, FILM_PER_PAGE); i++) {
-  render(filmList, createCardFilmTemplate(films[i]), `beforeend`);
+  render(filmList, createCardFilmTemplate(filteredFilms[i]), `beforeend`);
 }
 
 if (filteredFilms.length > FILM_PER_PAGE) {
@@ -151,11 +152,11 @@ if (filteredFilms.length > FILM_PER_PAGE) {
   }
 }
 
-for (let i = 0; i < FILM_RATED_CONT; i++) {
+for (let i = 0; i < FILM_RATED_COUNT; i++) {
   render(filmListRated, createCardFilmTemplate(filmsRated()[i]), `beforeend`);
 }
 
-for (let i = 0; i < FILM_RATED_CONT; i++) {
+for (let i = 0; i < FILM_RATED_COUNT; i++) {
   render(filmListCommented, createCardFilmTemplate(filmsCommented()[i]), `beforeend`);
 }
 
