@@ -1,15 +1,16 @@
 import dayjs from "dayjs";
 
 const createCommentTemplate = (comment) => {
+  const {info: {emotion, text, author}, date} = comment;
   return `<li class="film-details__comment">
             <span class="film-details__comment-emoji">
-              <img src="./images/emoji/${emoji(comment.info.emotion)}" width="55" height="55" alt="emoji-smile">
+              <img src="./images/emoji/${emoji(emotion)}" width="55" height="55" alt="emoji-${emotion}">
             </span>
             <div>
-              <p class="film-details__comment-text">${comment.info.text}</p>
+              <p class="film-details__comment-text">${text}</p>
               <p class="film-details__comment-info">
-                <span class="film-details__comment-author">${comment.info.author}</span>
-                <span class="film-details__comment-day">${dayjs(comment.date).format(`YYYY/MM/DD HH:mm`)}</span>
+                <span class="film-details__comment-author">${author}</span>
+                <span class="film-details__comment-day">${dayjs(date).format(`YYYY/MM/DD HH:mm`)}</span>
                 <button class="film-details__comment-delete">Delete</button>
               </p>
             </div>
