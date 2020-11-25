@@ -112,7 +112,7 @@ const generateTime = () => {
 };
 
 const generateRandomComments = () => {
-  const COMMENT_COUNT = getRandomInteger(0, 50);
+  const COMMENT_COUNT = getRandomInteger(0, 5);
   const randomComments = new Array(COMMENT_COUNT).fill(null).map((_, index) => generateComments(index));
   return randomComments;
 };
