@@ -1,4 +1,3 @@
-import dayjs from "dayjs";
 import {nanoid} from 'nanoid';
 import {generateComments} from "./comments";
 import {getRandomInteger} from "./random";
@@ -103,15 +102,6 @@ const generateDescription = () => {
     `In rutrum ac purus sit amet tempus.`];
 
   return sentences.slice(getRandomInteger(1, sentences.length - 1)).join(` `);
-};
-
-const generateDate = () => {
-
-  const randomYear = getRandomInteger(1970, dayjs().format(`YYYY`));
-  const randomMonth = getRandomInteger(0, 11);
-  const randomDay = getRandomInteger(0, 30);
-
-  return dayjs().set(`year`, randomYear).set(`month`, randomMonth).set(`day`, randomDay).toDate();
 };
 
 const generateTime = () => {

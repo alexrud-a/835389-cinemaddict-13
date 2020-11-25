@@ -1,15 +1,5 @@
-import dayjs from "dayjs";
 import {nanoid} from 'nanoid';
 import {getRandomInteger} from "./random";
-
-const generateDate = () => {
-
-  const randomYear = getRandomInteger(2000, dayjs().format(`YYYY`));
-  const randomMonth = getRandomInteger(0, 11);
-  const randomDay = getRandomInteger(0, 30);
-
-  return dayjs().set(`year`, randomYear).set(`month`, randomMonth).set(`day`, randomDay).toDate();
-};
 
 const generateComment = () => {
   const comments = [
@@ -49,6 +39,6 @@ export const generateComments = () => {
   return {
     id: nanoid(),
     info: generateComment(),
-    date: generateDate(),
+    date: new Date(getRandomInteger(0, new Date())),
   };
 };
