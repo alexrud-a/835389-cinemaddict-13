@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 
-const createCommentTemplate = (comments) => {
-  return comments.map((comment) => `<li class="film-details__comment">
+const createCommentTemplate = (comment) => {
+  return `<li class="film-details__comment">
             <span class="film-details__comment-emoji">
               <img src="./images/emoji/${emoji(comment.info.emotion)}" width="55" height="55" alt="emoji-smile">
             </span>
@@ -13,7 +13,7 @@ const createCommentTemplate = (comments) => {
                 <button class="film-details__comment-delete">Delete</button>
               </p>
             </div>
-          </li>`).join(``);
+          </li>`;
 };
 
 const emoji = (emotion) => {
@@ -36,7 +36,7 @@ const emoji = (emotion) => {
 };
 
 export const createCommentsTemplate = (comments) => {
-  return `<ul class="film-details__comments-list">${createCommentTemplate(comments)}</ul>
+  return `<ul class="film-details__comments-list">${comments.map((comment) => createCommentTemplate(comment)).join(``)}</ul>
 
         <div class="film-details__new-comment">
           <div class="film-details__add-emoji-label"></div>
