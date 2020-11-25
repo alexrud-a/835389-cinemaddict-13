@@ -93,6 +93,7 @@ if (filteredFilms.length > FILM_PER_PAGE) {
     renderedFilmsCount += FILM_PER_PAGE;
     if (renderedFilmsCount >= filteredFilms.length) {
       loadMoreButton.style.display = `none`;
+      renderedFilmsCount = FILM_PER_PAGE;
     }
   });
   const filterBtns = siteMainElement.querySelectorAll(`.main-navigation__item`);
