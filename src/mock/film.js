@@ -1,6 +1,6 @@
 import {nanoid} from 'nanoid';
 import {generateComments} from "./comments";
-import {getRandomInteger} from "./random";
+import {getRandomInteger} from "../utils";
 
 const generateRating = (a = 0, b = 1) => {
   const lower = Math.ceil(Math.min(a, b));
