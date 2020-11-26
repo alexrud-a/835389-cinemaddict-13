@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
+import {createElement} from "../utils";
 
-export const createCardFilmTemplate = (film) => {
+const createCardFilmTemplate = (film) => {
   const {id, info, time, date, rating, isFavorite, isViewed, isWatchlist, genre, comments, description} = film;
 
   const year = dayjs(date).format(`YYYY`);
@@ -44,3 +45,26 @@ export const createCardFilmTemplate = (film) => {
           </div>
         </article>`;
 };
+
+export default class CardFilm {
+  constructor(film) {
+    this._element = null;
+    this._film = film;
+  }
+
+  getTemplate() {
+    return createCardFilmTemplate(this._film);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

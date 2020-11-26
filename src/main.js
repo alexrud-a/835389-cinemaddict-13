@@ -1,42 +1,19 @@
 import SiteMenu from "./view/menu";
 import SortPanel from "./view/sort-panel";
-import {createFilmListTemplate} from "./view/films-list";
-import {createFooterStatisticsTemplate} from "./view/count-films";
-import {createCardFilmTemplate} from "./view/film-card";
+import FilmList from "./view/films-list";
+import FooterStatistics from "./view/count-films";
+import CardFilm from "./view/film-card";
+import Loadmore from "./view/loadmore";
+import Popup from "./view/popup";
+import EmptyFilms from "./view/empty-films";
 import {generateFilm} from "./mock/film";
-import {createLoadmoreTemplate} from "./view/loadmore";
-import {createTemplatePopupFilm} from "./view/popup";
-import {createEmptyFilms} from "./view/empty-films";
-import {renderTemplate, render, RenderPosition} from "./utils.js";
+import {render, compareValues} from "./utils.js";
 
 const FILM_COUNT = 48;
 const FILM_PER_PAGE = 5;
 const FILM_RATED_COUNT = 2;
 
 const films = new Array(FILM_COUNT).fill().map(generateFilm);
-
-const compareValues = (key, order) => {
-  return function innerSort(a, b) {
-    if (!a.hasOwnProperty(key) || !b.hasOwnProperty(key)) {
-      return 0;
-    }
-
-    const varA = (typeof a[key] === `string`)
-      ? a[key].toUpperCase() : a[key];
-    const varB = (typeof b[key] === `string`)
-      ? b[key].toUpperCase() : b[key];
-
-    let comparison = 0;
-    if (varA > varB) {
-      comparison = 1;
-    } else if (varA < varB) {
-      comparison = -1;
-    }
-    return (
-      (order === `desc`) ? (comparison * -1) : comparison
-    );
-  };
-};
 
 let filteredFilms = films.slice().sort(compareValues(`id`, `asc`));
 
@@ -61,8 +38,8 @@ const siteFooterStatistics = document.querySelector(`.footer__statistics`);
 
 render(siteMainElement, new SiteMenu(sortInfo).getElement(), `beforeend`);
 render(siteMainElement, new SortPanel().getElement(), `beforeend`);
-renderTemplate(siteMainElement, createFilmListTemplate(), `beforeend`);
-renderTemplate(siteFooterStatistics, createFooterStatisticsTemplate(FILM_COUNT), `beforeend`);
+render(siteMainElement, new FilmList().getElement(), `beforeend`);
+render(siteFooterStatistics, new FooterStatistics(FILM_COUNT).getElement(), `beforeend`);
 
 const filmList = siteMainElement.querySelector(`.js-film-list-main`);
 const filmListRated = siteMainElement.querySelector(`.js-film-list-rated`);
@@ -70,24 +47,22 @@ const filmListCommented = siteMainElement.querySelector(`.js-film-list-commented
 const filmsContainer = siteMainElement.querySelector(`.js-films-container`);
 
 if (filteredFilms.length > 0) {
-  renderTemplate(filmList, createCardFilmTemplate(filteredFilms[0]), `beforeend`);
-
-  for (let i = 1; i < Math.min(filteredFilms.length, FILM_PER_PAGE); i++) {
-    renderTemplate(filmList, createCardFilmTemplate(filteredFilms[i]), `beforeend`);
+  for (let i = 0; i < Math.min(filteredFilms.length, FILM_PER_PAGE); i++) {
+    render(filmList, new CardFilm(filteredFilms[i]).getElement(), `beforeend`);
   }
 } else {
-  renderTemplate(filmList, createEmptyFilms(), `beforeend`);
+  render(filmList, new EmptyFilms().getElement(), `beforeend`);
 }
 
 if (filteredFilms.length > FILM_PER_PAGE) {
   let renderedFilmsCount = FILM_PER_PAGE;
-  renderTemplate(filmsContainer, createLoadmoreTemplate(), `beforeend`);
+  render(filmsContainer, new Loadmore().getElement(), `beforeend`);
   const loadMoreButton = filmsContainer.querySelector(`.js-loadmore`);
   loadMoreButton.addEventListener(`click`, (evt) => {
     evt.preventDefault();
     filteredFilms
       .slice(renderedFilmsCount, renderedFilmsCount + FILM_PER_PAGE)
-      .forEach((film) => renderTemplate(filmList, createCardFilmTemplate(film), `beforeend`));
+      .forEach((film) => render(filmList, new CardFilm(film).getElement(), `beforeend`));
 
     renderedFilmsCount += FILM_PER_PAGE;
     if (renderedFilmsCount >= filteredFilms.length) {
@@ -114,10 +89,8 @@ if (filteredFilms.length > FILM_PER_PAGE) {
       }
       filmList.innerHTML = ``;
 
-      renderTemplate(filmList, createCardFilmTemplate(filteredFilms[0]), `beforeend`);
-
       for (let i = 1; i < Math.min(filteredFilms.length, FILM_PER_PAGE); i++) {
-        renderTemplate(filmList, createCardFilmTemplate(filteredFilms[i]), `beforeend`);
+        render(filmList, new CardFilm(filteredFilms[i]).getElement(), `beforeend`);
       }
     });
   }
@@ -142,21 +115,19 @@ if (filteredFilms.length > FILM_PER_PAGE) {
 
       filmList.innerHTML = ``;
 
-      renderTemplate(filmList, createCardFilmTemplate(filteredFilms[0]), `beforeend`);
-
       for (let i = 1; i < Math.min(filteredFilms.length, FILM_PER_PAGE); i++) {
-        renderTemplate(filmList, createCardFilmTemplate(filteredFilms[i]), `beforeend`);
+        render(filmList, new CardFilm(filteredFilms[i]).getElement(), `beforeend`);
       }
     });
   }
 }
 
 for (let i = 0; i < FILM_RATED_COUNT; i++) {
-  renderTemplate(filmListRated, createCardFilmTemplate(filmsRated()[i]), `beforeend`);
+  render(filmListRated, new CardFilm(filmsRated()[i]).getElement(), `beforeend`);
 }
 
 for (let i = 0; i < FILM_RATED_COUNT; i++) {
-  renderTemplate(filmListCommented, createCardFilmTemplate(filmsCommented()[i]), `beforeend`);
+  render(filmListCommented, new CardFilm(filmsCommented()[i]).getElement(), `beforeend`);
 }
 
 siteBody.addEventListener(`click`, function (event) {
@@ -168,12 +139,14 @@ siteBody.addEventListener(`click`, function (event) {
 
 const showpopup = (id) => {
   let film = films.filter((item) => item.id === id)[0];
-  renderTemplate(siteBody, createTemplatePopupFilm(film), `beforeend`);
+  render(siteBody, new Popup(film).getElement(), `beforeend`);
+  siteBody.classList.add(`hide-overflow`);
 };
 
 siteBody.addEventListener(`click`, (event) => {
   let target = event.target;
   if (target.classList.contains(`film-details__close-btn`) === true) {
     document.querySelector(`.film-details`).remove();
+    siteBody.classList.remove(`hide-overflow`);
   }
 });
