@@ -1,5 +1,5 @@
 import SiteMenu from "./view/menu";
-import {createSortPanelTemplate} from "./view/sort-panel";
+import SortPanel from "./view/sort-panel";
 import {createFilmListTemplate} from "./view/films-list";
 import {createFooterStatisticsTemplate} from "./view/count-films";
 import {createCardFilmTemplate} from "./view/film-card";
@@ -60,7 +60,7 @@ const siteMainElement = document.querySelector(`.main`);
 const siteFooterStatistics = document.querySelector(`.footer__statistics`);
 
 render(siteMainElement, new SiteMenu(sortInfo).getElement(), `beforeend`);
-renderTemplate(siteMainElement, createSortPanelTemplate(), `beforeend`);
+render(siteMainElement, new SortPanel().getElement(), `beforeend`);
 renderTemplate(siteMainElement, createFilmListTemplate(), `beforeend`);
 renderTemplate(siteFooterStatistics, createFooterStatisticsTemplate(FILM_COUNT), `beforeend`);
 
