@@ -1,5 +1,5 @@
 import {nanoid} from 'nanoid';
-import {getRandomInteger} from "./random";
+import {getRandomInteger} from "../utils";
 
 const generateComment = () => {
   const comments = [

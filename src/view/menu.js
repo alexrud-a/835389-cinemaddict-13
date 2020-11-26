@@ -1,5 +1,7 @@
-export const createMenuTemplate = (filmsInfo) => {
-  const {watchlist, history, favorites} = filmsInfo;
+import {createElement} from "../utils.js";
+
+const createMenuTemplate = (sortInfo) => {
+  const {watchlist, history, favorites} = sortInfo;
   return `<nav class="main-navigation">
     <div class="main-navigation__items">
       <a href="#all" data-sort="all" class="main-navigation__item main-navigation__item--active">All movies</a>
@@ -10,3 +12,27 @@ export const createMenuTemplate = (filmsInfo) => {
     <a href="#stats" class="main-navigation__additional">Stats</a>
   </nav>`;
 };
+
+export default class SiteMenu {
+  constructor(sortInfo) {
+    this._element = null;
+    this._sortInfo = sortInfo;
+  }
+
+  getTemplate() {
+    return createMenuTemplate(this._sortInfo);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+
