@@ -51,15 +51,24 @@ if (filteredFilms.length > 0) {
   for (let i = 0; i < Math.min(filteredFilms.length, FILM_PER_PAGE); i++) {
     const card = new CardFilm(filteredFilms[i]);
     render(filmList, card.getElement(), RenderPosition.BEFOREEND);
+    card.getElement().addEventListener(`click`, function () {
+      showPopup(filteredFilms[i]);
+    });
   }
   for (let i = 0; i < FILM_RATED_COUNT; i++) {
     const card = new CardFilm(filmsRated()[i]);
     render(filmListRated, card.getElement(), RenderPosition.BEFOREEND);
+    card.getElement().addEventListener(`click`, function () {
+      showPopup(filmsRated()[i]);
+    });
   }
 
   for (let i = 0; i < FILM_RATED_COUNT; i++) {
     const card = new CardFilm(filmsCommented()[i]);
     render(filmListCommented, card.getElement(), RenderPosition.BEFOREEND);
+    card.getElement().addEventListener(`click`, function () {
+      showPopup(filmsCommented()[i]);
+    });
   }
 
   if (filteredFilms.length > FILM_PER_PAGE) {
@@ -68,7 +77,13 @@ if (filteredFilms.length > 0) {
     const loadMoreFilms = () => {
       filteredFilms
         .slice(renderedFilmsCount, renderedFilmsCount + FILM_PER_PAGE)
-        .forEach((film) => render(filmList, new CardFilm(film).getElement(), RenderPosition.BEFOREEND));
+        .forEach((film) => {
+          const card = new CardFilm(film);
+          render(filmList, card.getElement(), RenderPosition.BEFOREEND);
+          card.getElement().addEventListener(`click`, function () {
+            showPopup(film);
+          });
+        });
 
       renderedFilmsCount += FILM_PER_PAGE;
       if (renderedFilmsCount >= filteredFilms.length) {
@@ -102,7 +117,11 @@ if (filteredFilms.length > 0) {
         filmList.innerHTML = ``;
 
         for (let i = 0; i < Math.min(filteredFilms.length, FILM_PER_PAGE); i++) {
-          render(filmList, new CardFilm(filteredFilms[i]).getElement(), RenderPosition.BEFOREEND);
+          const card = new CardFilm(filteredFilms[i]);
+          render(filmList, card.getElement(), RenderPosition.BEFOREEND);
+          card.getElement().addEventListener(`click`, function () {
+            showPopup(filteredFilms[i]);
+          });
         }
       });
     }
@@ -130,6 +149,9 @@ if (filteredFilms.length > 0) {
         for (let i = 0; i < Math.min(filteredFilms.length, FILM_PER_PAGE); i++) {
           const card = new CardFilm(filteredFilms[i]);
           render(filmList, card.getElement(), RenderPosition.BEFOREEND);
+          card.getElement().addEventListener(`click`, function () {
+            showPopup(filteredFilms[i]);
+          });
         }
       });
     }
@@ -138,8 +160,7 @@ if (filteredFilms.length > 0) {
   render(siteMainElement, new EmptyFilms().getElement(), RenderPosition.BEFOREEND);
 }
 
-const showPopup = (id) => {
-  let film = films.filter((item) => item.id === id)[0];
+const showPopup = (film) => {
   const filmPopup = new Popup(film);
   render(siteBody, filmPopup.getElement(), RenderPosition.BEFOREEND);
   siteBody.classList.add(`hide-overflow`);
@@ -148,13 +169,6 @@ const showPopup = (id) => {
     closePopup(filmPopup);
   });
 };
-
-siteBody.addEventListener(`click`, function (event) {
-  let target = event.target;
-  if (target.classList.contains(`js-open-popup`) === true) {
-    showPopup(target.closest(`.film-card`).getAttribute(`id`));
-  }
-});
 
 const closePopup = (filmPopup) => {
   filmPopup.getElement().remove();
