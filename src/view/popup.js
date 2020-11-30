@@ -6,7 +6,7 @@ const createGenresTemplate = (genre) => {
 };
 
 const createTemplatePopupFilm = (film) => {
-  const {info, time, date, rating, age, isFavorite, isViewed, isWatchlist, comments, description, regisseur, screenwriters, actors, country, genre} = film;
+  const {info, time, date, rating, age, isFavorite, isViewed, isWatchlist, description, regisseur, screenwriters, actors, country, genre} = film;
   const fullDate = dayjs(date).format(`DD MMMM YYYY`);
   const watchlistCheck = isWatchlist
     ? `checked`
