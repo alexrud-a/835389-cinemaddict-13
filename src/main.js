@@ -73,7 +73,6 @@ if (filteredFilms.length > 0) {
     const renderLoadMore = () => {
       loadMore.getElement().addEventListener(`click`, (evt) => {
         evt.preventDefault();
-        console.log(renderedFilmsCount);
         loadMoreFilms();
       });
     };
