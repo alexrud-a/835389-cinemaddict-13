@@ -8,6 +8,7 @@ import Popup from "./view/popup";
 import EmptyFilms from "./view/empty-films";
 import {generateFilm} from "./mock/film";
 import {render, RenderPosition, compareValues} from "./utils.js";
+import Comments from "./view/comments";
 
 const FILM_COUNT = 22;
 const FILM_PER_PAGE = 5;
@@ -153,6 +154,9 @@ if (filteredFilms.length > 0) {
 const showPopup = (film) => {
   const filmPopup = new Popup(film);
   render(siteBody, filmPopup.getElement(), RenderPosition.BEFOREEND);
+  const commentsList = new Comments(film.comments);
+  const commentsContainer = filmPopup.getElement().querySelector(`.film-details__bottom-container`);
+  render(commentsContainer, commentsList.getElement(), RenderPosition.BEFOREEND);
   siteBody.classList.add(`hide-overflow`);
   filmPopup.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, () => closePopup(filmPopup));
   document.addEventListener(`keydown`, (evt) => {

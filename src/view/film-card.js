@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import {createElement} from "../utils";
+import AbstractView from "./abstract";
 
 const createCardFilmTemplate = (film) => {
   const {id, info, time, date, rating, isFavorite, isViewed, isWatchlist, genre, comments, description} = film;
@@ -46,25 +46,14 @@ const createCardFilmTemplate = (film) => {
         </article>`;
 };
 
-export default class CardFilm {
+export default class CardFilm extends AbstractView {
   constructor(film) {
+    super();
     this._element = null;
     this._film = film;
   }
 
   getTemplate() {
     return createCardFilmTemplate(this._film);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
