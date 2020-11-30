@@ -1,11 +1,12 @@
 import dayjs from "dayjs";
 import {createCommentsTemplate} from "./comments";
+import {createElement} from "../utils";
 
 const createGenresTemplate = (genre) => {
   return genre.map((item) => `<span class="film-details__genre">${item}</span>`).join(``);
 };
 
-export const createTemplatePopupFilm = (film) => {
+const createTemplatePopupFilm = (film) => {
   const {info, time, date, rating, age, isFavorite, isViewed, isWatchlist, comments, description, regisseur, screenwriters, actors, country, genre} = film;
   const fullDate = dayjs(date).format(`DD MMMM YYYY`);
 
@@ -105,3 +106,26 @@ export const createTemplatePopupFilm = (film) => {
   </form>
 </section>`;
 };
+
+export default class Popup {
+  constructor(film) {
+    this._element = null;
+    this._film = film;
+  }
+
+  getTemplate() {
+    return createTemplatePopupFilm(this._film);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
