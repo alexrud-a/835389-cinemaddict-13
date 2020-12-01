@@ -18,10 +18,16 @@ export default class SiteMenu extends AbstractView {
     super();
     this._element = null;
     this._sortInfo = sortInfo;
+    this._clickHandler = this._clickHandler.bind(this);
   }
 
   getTemplate() {
     return createMenuTemplate(this._sortInfo);
+  }
+
+  _clickHandler(evt) {
+    evt.preventDefault();
+    this._callback.click();
   }
 }
 

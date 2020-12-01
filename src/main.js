@@ -46,7 +46,7 @@ render(siteFooterStatistics, new FooterStatistics(FILM_COUNT).getElement(), Rend
 const renderFilmCard = (container, film) => {
   const card = new CardFilm(film);
   render(container, card.getElement(), RenderPosition.BEFOREEND);
-  card.getElement().addEventListener(`click`, () => showPopup(film));
+  card.setClickHandler(() => showPopup(film));
 };
 
 if (filteredFilms.length > 0) {
@@ -72,8 +72,7 @@ if (filteredFilms.length > 0) {
     let renderedFilmsCount = FILM_PER_PAGE;
     render(filmsContainer, loadMore.getElement(), RenderPosition.BEFOREEND);
     const renderLoadMore = () => {
-      loadMore.getElement().addEventListener(`click`, (evt) => {
-        evt.preventDefault();
+      loadMore.setClickHandler(() => {
         loadMoreFilms();
       });
     };
@@ -158,7 +157,7 @@ const showPopup = (film) => {
   const commentsContainer = filmPopup.getElement().querySelector(`.film-details__bottom-container`);
   render(commentsContainer, commentsList.getElement(), RenderPosition.BEFOREEND);
   siteBody.classList.add(`hide-overflow`);
-  filmPopup.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, () => closePopup(filmPopup));
+  filmPopup.setClickHandler(() => closePopup(filmPopup));
   document.addEventListener(`keydown`, (evt) => {
     if (evt.key === `Escape` || evt.key === `Esc`) {
       evt.preventDefault();
