@@ -34,10 +34,10 @@ const sortInfo = {
 
 
 const siteBody = document.querySelector(`body`);
-const siteMainElement = document.querySelector(`.main`);
+const siteMainElement = siteBody.querySelector(`.main`);
 const menu = new SiteMenu(sortInfo);
 const sort = new SortPanel();
-const siteFooterStatistics = document.querySelector(`.footer__statistics`);
+const siteFooterStatistics = siteBody.querySelector(`.footer__statistics`);
 const loadMore = new Loadmore();
 
 render(siteMainElement, menu.getElement(), RenderPosition.BEFOREEND);
