@@ -105,17 +105,12 @@ export default class Popup extends AbstractView {
   constructor(film) {
     super();
     this._element = null;
-    this._film = film;
     this._clickHandler = this._clickHandler.bind(this);
+    this._film = film;
   }
 
   getTemplate() {
     return createTemplatePopupFilm(this._film);
-  }
-
-  _clickHandler(evt) {
-    evt.preventDefault();
-    this._callback.click();
   }
 
   setClickHandler(callback) {

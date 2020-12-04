@@ -5,18 +5,9 @@ const createLoadmoreTemplate = () => {
 };
 
 export default class Loadmore extends AbstractView {
-  constructor() {
-    super();
-    this._clickHandler = this._clickHandler.bind(this);
-  }
 
   getTemplate() {
     return createLoadmoreTemplate();
-  }
-
-  _clickHandler(evt) {
-    evt.preventDefault();
-    this._callback.click();
   }
 
   setClickHandler(callback) {
