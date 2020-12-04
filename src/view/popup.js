@@ -113,6 +113,10 @@ export default class Popup extends AbstractView {
     return createTemplatePopupFilm(this._film);
   }
 
+  getСommentsContainer() {
+    return super.getElement().querySelector(`.film-details__bottom-container`);
+  }
+
   setClickHandler(callback) {
     this._callback.click = callback;
     this.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, this._clickHandler);

@@ -96,7 +96,7 @@ if (filteredFilms.length > 0) {
     menu.setClickHandler((evt) => {
       renderedFilmsCount = FILM_PER_PAGE;
       let param = evt.target.getAttribute(`data-sort`);
-      menu.getElement().querySelector(`.main-navigation__item--active`).classList.remove(`main-navigation__item--active`);
+      menu.getActiveMenuLink().classList.remove(`main-navigation__item--active`);
       evt.target.classList.add(`main-navigation__item--active`);
       filteredFilms = films.slice();
       if (filteredFilms.length > FILM_PER_PAGE) {
@@ -114,7 +114,7 @@ if (filteredFilms.length > 0) {
     });
 
     sort.setClickHandler((evt) => {
-      sort.getElement().querySelector(`.sort__button--active`).classList.remove(`sort__button--active`);
+      sort.getActiveMenuLink().classList.remove(`sort__button--active`);
       evt.target.classList.add(`sort__button--active`);
       let param = evt.target.getAttribute(`data-sort`);
       if (filteredFilms.length > FILM_PER_PAGE) {
@@ -142,8 +142,7 @@ const showPopup = (film) => {
   const filmPopup = new Popup(film);
   render(siteBody, filmPopup.getElement(), RenderPosition.BEFOREEND);
   const commentsList = new Comments(film.comments);
-  const commentsContainer = filmPopup.getElement().querySelector(`.film-details__bottom-container`);
-  render(commentsContainer, commentsList.getElement(), RenderPosition.BEFOREEND);
+  render(filmPopup.getСommentsContainer(), commentsList.getElement(), RenderPosition.BEFOREEND);
   siteBody.classList.add(`hide-overflow`);
   filmPopup.setClickHandler(() => closePopup(filmPopup));
   document.addEventListener(`keydown`, (evt) => {
