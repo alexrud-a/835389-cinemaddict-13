@@ -1,4 +1,4 @@
-import {createElement} from "../utils";
+import AbstractView from "./abstract";
 
 const createSortPanelTemplate = () => {
   return `<ul class="sort">
@@ -8,24 +8,20 @@ const createSortPanelTemplate = () => {
   </ul>`;
 };
 
-export default class SortPanel {
-  constructor() {
-    this._element = null;
-  }
+export default class SortPanel extends AbstractView {
 
   getTemplate() {
     return createSortPanelTemplate();
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  getActiveMenuLink() {
+    return super.getElement().querySelector(`.sort__button--active`);
   }
 
-  removeElement() {
-    this._element = null;
+  setClickHandler(callback) {
+    this._callback.click = callback;
+    for (let btn of this.getElement().querySelectorAll(`.sort__button`)) {
+      btn.addEventListener(`click`, this._clickHandler);
+    }
   }
 }

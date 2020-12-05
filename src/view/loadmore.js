@@ -1,26 +1,17 @@
-import {createElement} from "../utils";
+import AbstractView from "./abstract";
 
 const createLoadmoreTemplate = () => {
   return `<button class="films-list__show-more js-loadmore">Show more</button>`;
 };
-export default class Loadmore {
-  constructor() {
-    this._element = null;
-  }
+
+export default class Loadmore extends AbstractView {
 
   getTemplate() {
     return createLoadmoreTemplate();
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
+  setClickHandler(callback) {
+    this._callback.click = callback;
+    this.getElement().addEventListener(`click`, this._clickHandler);
   }
 }

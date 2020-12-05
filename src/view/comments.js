@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import AbstractView from "./abstract";
 
 const createCommentTemplate = (comment) => {
   const {info: {emotion, text, author}, date} = comment;
@@ -31,8 +32,10 @@ const emoji = (emotion) => {
   return null;
 };
 
-export const createCommentsTemplate = (comments) => {
-  return `<ul class="film-details__comments-list">${comments.map((comment) => createCommentTemplate(comment)).join(``)}</ul>
+const createCommentsTemplate = (comments) => {
+  return `<section class="film-details__comments-wrap">
+        <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
+        <ul class="film-details__comments-list">${comments.map((comment) => createCommentTemplate(comment)).join(``)}</ul>
 
         <div class="film-details__new-comment">
           <div class="film-details__add-emoji-label"></div>
@@ -62,5 +65,18 @@ export const createCommentsTemplate = (comments) => {
               <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
             </label>
           </div>
-        </div>`;
+        </div>
+        </section>`;
 };
+
+export default class Comments extends AbstractView {
+  constructor(comments) {
+    super();
+    this._element = null;
+    this._comments = comments;
+  }
+
+  getTemplate() {
+    return createCommentsTemplate(this._comments);
+  }
+}

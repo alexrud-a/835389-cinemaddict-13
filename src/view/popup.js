@@ -1,15 +1,13 @@
 import dayjs from "dayjs";
-import {createCommentsTemplate} from "./comments";
-import {createElement} from "../utils";
+import AbstractView from "./abstract";
 
 const createGenresTemplate = (genre) => {
   return genre.map((item) => `<span class="film-details__genre">${item}</span>`).join(``);
 };
 
 const createTemplatePopupFilm = (film) => {
-  const {info, time, date, rating, age, isFavorite, isViewed, isWatchlist, comments, description, regisseur, screenwriters, actors, country, genre} = film;
+  const {info, time, date, rating, age, isFavorite, isViewed, isWatchlist, description, regisseur, screenwriters, actors, country, genre} = film;
   const fullDate = dayjs(date).format(`DD MMMM YYYY`);
-
   const watchlistCheck = isWatchlist
     ? `checked`
     : ``;
@@ -98,18 +96,16 @@ const createTemplatePopupFilm = (film) => {
     </div>
 
     <div class="film-details__bottom-container">
-      <section class="film-details__comments-wrap">
-        <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
-        ${createCommentsTemplate(comments)}
-      </section>
     </div>
   </form>
 </section>`;
 };
 
-export default class Popup {
+export default class Popup extends AbstractView {
   constructor(film) {
+    super();
     this._element = null;
+    this._clickHandler = this._clickHandler.bind(this);
     this._film = film;
   }
 
@@ -117,15 +113,13 @@ export default class Popup {
     return createTemplatePopupFilm(this._film);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  getСommentsContainer() {
+    return super.getElement().querySelector(`.film-details__bottom-container`);
   }
 
-  removeElement() {
-    this._element = null;
+  setClickHandler(callback) {
+    this._callback.click = callback;
+    this.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, this._clickHandler);
   }
 }
+
