@@ -1,3 +1,5 @@
+import SiteMenu from "../view/menu";
+import SortPanel from "../view/sort-panel";
 import FilmList from "../view/films-list";
 import Loadmore from "../view/loadmore";
 import {render, RenderPosition, compareValues} from "../utils";
@@ -12,6 +14,9 @@ export default class FilmsPresenter {
     this._filmsContainer = filmsContainer;
     this._renderedFilmsCount = FILM_PER_PAGE;
     this._films = null;
+    this._sort = null;
+    this._menu = null;
+    this._sortPanel = new SortPanel();
     this._filmList = new FilmList();
     this._loadMore = new Loadmore();
     this._mainFilmList = this._filmList.getElement().querySelector(`.js-film-list-main`);
@@ -19,15 +24,52 @@ export default class FilmsPresenter {
     this._topRatedFilmList = this._filmList.getElement().querySelector(`.js-film-list-rated`);
     this._topCommentedFilmList = this._filmList.getElement().querySelector(`.js-film-list-commented`);
     this._handleLoadMoreButtonClick = this._handleLoadMoreButtonClick.bind(this);
+    this._handleSortItemClick = this._handleSortItemClick.bind(this);
+    this._handleFilterItemClick = this._handleFilterItemClick.bind(this);
   }
 
-  init(films) {
-    this._films = films;
+  init(films, sortInfo) {
+    this._films = films.slice();
+    this._sourcedFilms = films.slice();
+    this._sort = sortInfo;
+    this._menu = new SiteMenu(this._sort);
     this._renderFilmsContainer();
+  }
+
+  update(films) {
+    this._films = films;
+    this._mainFilmList.innerHTML = ``;
+    this._renderFilms();
+  }
+
+  _renderMenu() {
+    render(this._filmsContainer, this._menu.getElement(), RenderPosition.AFTERBEGIN);
+    this._menu.setClickHandler((evt) => this._handleFilterItemClick(evt));
+  }
+
+  _handleFilterItemClick(evt) {
+    let param = evt.target.getAttribute(`data-sort`);
+    this._menu.getActiveMenuLink().classList.remove(`main-navigation__item--active`);
+    evt.target.classList.add(`main-navigation__item--active`);
+    this._filteredFilms(param);
+  }
+
+  _renderSort() {
+    render(this._filmsContainer, this._sortPanel.getElement(), RenderPosition.AFTERBEGIN);
+    this._sortPanel.setClickHandler((evt) => this._handleSortItemClick(evt));
+  }
+
+  _handleSortItemClick(evt) {
+    this._sortPanel.getActiveMenuLink().classList.remove(`sort__button--active`);
+    evt.target.classList.add(`sort__button--active`);
+    let param = evt.target.getAttribute(`data-sort`);
+    this._sortedFilms(param);
   }
 
   _renderFilmsContainer() {
     render(this._filmsContainer, this._filmList.getElement(), RenderPosition.BEFOREEND);
+    this._renderSort(this._filmsContainer);
+    this._renderMenu(this._filmsContainer);
     this._renderFilms();
     this._renderRatedFilms();
     this._renderCommentedFilms();
@@ -88,12 +130,23 @@ export default class FilmsPresenter {
     return this._films.slice().sort(compareValues(`comments`, `desc`)).slice(0, FILM_RATED_COUNT);
   }
 
-  filteredFilms(param) {
-    if (this._films.length > FILM_PER_PAGE) {
-      this._renderLoadMore();
-    }
+  _sortedFilms(param) {
+    let sorted;
     if (param !== `default`) {
-      let filteredFilms = this._films.slice().sort(compareValues(param, `desc`));
+      sorted = this._sourcedFilms.slice().sort(compareValues(param, `desc`));
+    } else {
+      sorted = this._sourcedFilms;
     }
+    this.update(sorted);
+  }
+
+  _filteredFilms(param) {
+    let filtered;
+    if (param !== `all`) {
+      filtered = this._sourcedFilms.slice().filter((film) => film[param] === true);
+    } else {
+      filtered = this._sourcedFilms;
+    }
+    this.update(filtered);
   }
 }
