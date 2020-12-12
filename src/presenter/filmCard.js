@@ -9,6 +9,7 @@ export default class FilmCardPresenter {
     this._filmContainer = filmContainer;
     this._film = null;
     this._card = null;
+    this._popup = new FilmPopupPresenter(siteBody);
   }
 
   init(film) {
@@ -20,10 +21,19 @@ export default class FilmCardPresenter {
   _renderCard() {
     render(this._filmContainer, this._card.getElement(), RenderPosition.BEFOREEND);
     this._card.setClickHandler(() => this._showPopup());
+    this._card.setEditClickHandler((evt) => this._clickFilmInfo(evt));
   }
 
   _showPopup() {
-    const popup = new FilmPopupPresenter(siteBody);
-    popup.init(this._film);
+    this._popup.init(this._film);
+  }
+
+  _clickFilmInfo(evt) {
+    let type = evt.target.getAttribute(`data-type`);
+    this._changeData(Object.assign({}, this._film, {[type]: !this._film[type]}));
+  }
+
+  _changeData() {
+    console.log(this._film);
   }
 }

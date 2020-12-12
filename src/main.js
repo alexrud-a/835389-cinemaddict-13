@@ -24,48 +24,6 @@ const emptyPresenter = new EmptyPresenter(siteMainElement);
 
 if (films.length > 0) {
   filmsPresenter.init(films, sortInfo);
-  // if (filteredFilms.length > FILM_PER_PAGE) {
-  // menu.setClickHandler((evt) => {
-  //   renderedFilmsCount = FILM_PER_PAGE;
-  //   let param = evt.target.getAttribute(`data-sort`);
-  //   menu.getActiveMenuLink().classList.remove(`main-navigation__item--active`);
-  //   evt.target.classList.add(`main-navigation__item--active`);
-  //   filteredFilms = films.slice();
-  //   if (filteredFilms.length > FILM_PER_PAGE) {
-  //     render(filmsContainer, loadMore.getElement(), RenderPosition.BEFOREEND);
-  //     renderLoadMore();
-  //   }
-  //   if (param !== `all`) {
-  //     filteredFilms = filteredFilms.filter((film) => film[param] === true);
-  //   }
-  //   filmList.innerHTML = ``;
-  //
-  //   for (let i = 0; i < Math.min(filteredFilms.length, FILM_PER_PAGE); i++) {
-  //     renderFilmCard(filmList, filteredFilms[i]);
-  //   }
-  // });
-
-  // sort.setClickHandler((evt) => {
-  //   sort.getActiveMenuLink().classList.remove(`sort__button--active`);
-  //   evt.target.classList.add(`sort__button--active`);
-  //   let param = evt.target.getAttribute(`data-sort`);
-  //   if (filteredFilms.length > FILM_PER_PAGE) {
-  //     render(filmsContainer, loadMore.getElement(), RenderPosition.BEFOREEND);
-  //     renderLoadMore();
-  //   }
-  //   if (param !== `default`) {
-  //     filteredFilms = filteredFilms.sort(compareValues(param, `desc`));
-  //   } else {
-  //     filteredFilms = filteredFilms.sort(compareValues(`id`, `asc`));
-  //   }
-  //
-  //   filmList.innerHTML = ``;
-  //
-  //   for (let i = 0; i < Math.min(filteredFilms.length, FILM_PER_PAGE); i++) {
-  //     renderFilmCard(filmList, filteredFilms[i]);
-  //   }
-  // });
-  // }
 } else {
   emptyPresenter.init();
 }

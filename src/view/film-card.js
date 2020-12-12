@@ -39,9 +39,9 @@ const createCardFilmTemplate = (film) => {
           <p class="film-card__description">${sliceDescription()}</p>
           <a class="js-open-popup film-card__comments">${comments.length} comments</a>
           <div class="film-card__controls">
-            <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist ${watchlistClassName}" type="button">Add to watchlist</button>
-            <button class="film-card__controls-item button film-card__controls-item--mark-as-watched ${watchedClassName}" type="button">Mark as watched</button>
-            <button class="film-card__controls-item button film-card__controls-item--favorite ${favoriteClassName}" type="button">Mark as favorite</button>
+            <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist ${watchlistClassName}" type="button" data-type="isWatchlist">Add to watchlist</button>
+            <button class="film-card__controls-item button film-card__controls-item--mark-as-watched ${watchedClassName}" type="button" data-type="isViewed">Mark as watched</button>
+            <button class="film-card__controls-item button film-card__controls-item--favorite ${favoriteClassName}" type="button" data-type="isFavorite">Mark as favorite</button>
           </div>
         </article>`;
 };
@@ -51,6 +51,7 @@ export default class CardFilm extends AbstractView {
     super();
     this._element = null;
     this._clickHandler = this._clickHandler.bind(this);
+    this._editClickHandler = this._editClickHandler.bind(this);
     this._film = film;
   }
 
@@ -62,6 +63,18 @@ export default class CardFilm extends AbstractView {
     this._callback.click = callback;
     for (let btn of this.getElement().querySelectorAll(`.js-open-popup`)) {
       btn.addEventListener(`click`, this._clickHandler);
+    }
+  }
+
+  _editClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.editClick(evt);
+  }
+
+  setEditClickHandler(callback) {
+    this._callback.editClick = callback;
+    for (let control of this.getElement().querySelectorAll(`.film-card__controls-item`)) {
+      control.addEventListener(`click`, this._editClickHandler);
     }
   }
 }
