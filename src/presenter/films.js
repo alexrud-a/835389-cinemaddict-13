@@ -2,7 +2,7 @@ import SiteMenu from "../view/menu";
 import SortPanel from "../view/sort-panel";
 import FilmList from "../view/films-list";
 import Loadmore from "../view/loadmore";
-import {render, RenderPosition, compareValues} from "../utils";
+import {render, RenderPosition, compareValues, updateItem} from "../utils";
 
 import FilmCardPresenter from "./filmCard";
 
@@ -14,8 +14,9 @@ export default class FilmsPresenter {
     this._filmsContainer = filmsContainer;
     this._renderedFilmsCount = FILM_PER_PAGE;
     this._films = null;
-    this._sort = null;
-    this._menu = null;
+    this._sort = {};
+    this._menu = {};
+    this._filmPresenter = {};
     this._sortPanel = new SortPanel();
     this._filmList = new FilmList();
     this._loadMore = new Loadmore();
@@ -26,6 +27,7 @@ export default class FilmsPresenter {
     this._handleLoadMoreButtonClick = this._handleLoadMoreButtonClick.bind(this);
     this._handleSortItemClick = this._handleSortItemClick.bind(this);
     this._handleFilterItemClick = this._handleFilterItemClick.bind(this);
+    this._handleFilmChange = this._handleFilmChange.bind(this);
   }
 
   init(films, sortInfo) {
@@ -76,8 +78,9 @@ export default class FilmsPresenter {
   }
 
   _renderCard(film, container) {
-    const cardPresenter = new FilmCardPresenter(container);
-    cardPresenter.init(film);
+    const filmPresenter = new FilmCardPresenter(container, this._handleFilmChange);
+    filmPresenter.init(film);
+    this._filmPresenter[film.id] = filmPresenter;
   }
 
   _renderFilmList(from, to) {
@@ -148,5 +151,10 @@ export default class FilmsPresenter {
       filtered = this._sourcedFilms;
     }
     this.update(filtered);
+  }
+
+  _handleFilmChange(updatedFilm) {
+    this._films = updateItem(this._films, updatedFilm);
+    this._filmPresenter[updatedFilm.id].init(updatedFilm);
   }
 }
