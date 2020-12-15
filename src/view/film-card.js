@@ -87,7 +87,7 @@ export default class CardFilm extends Smart {
     let type = evt.target.getAttribute(`data-type`);
     this._callback.editClick(evt, CardFilm.parseDataToFilm(this._data));
     this.updateData({
-      [type]: [type]
+      [type]: !this._film[type]
     });
   }
 

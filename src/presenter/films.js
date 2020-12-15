@@ -28,6 +28,10 @@ export default class FilmsPresenter {
     this._handleSortItemClick = this._handleSortItemClick.bind(this);
     this._handleFilterItemClick = this._handleFilterItemClick.bind(this);
     this._handleFilmChange = this._handleFilmChange.bind(this);
+    this._sortType = {
+      sort: `default`,
+      filter: `all`,
+    };
   }
 
   init(films, sortInfo) {
@@ -134,21 +138,31 @@ export default class FilmsPresenter {
   }
 
   _sortedFilms(param) {
+    this._sortType.sort = param;
+    console.log(this._sortType);
     let sorted;
     if (param !== `default`) {
       sorted = this._sourcedFilms.slice().sort(compareValues(param, `desc`));
     } else {
       sorted = this._sourcedFilms;
     }
+    if (this._sortType.filter !== `all`) {
+      sorted = sorted.filter((film) => film[this._sortType.filter] === true);
+    }
     this.update(sorted);
   }
 
   _filteredFilms(param) {
+    this._sortType.filter = param;
+    console.log(this._sortType);
     let filtered;
     if (param !== `all`) {
       filtered = this._sourcedFilms.slice().filter((film) => film[param] === true);
     } else {
       filtered = this._sourcedFilms;
+    }
+    if (this._sortType.sort !== `default`) {
+      filtered = filtered.sort(compareValues(this._sortType.sort, `desc`));
     }
     this.update(filtered);
   }
