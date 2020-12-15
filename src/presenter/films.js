@@ -5,9 +5,11 @@ import Loadmore from "../view/loadmore";
 import {render, RenderPosition, compareValues, updateItem} from "../utils";
 
 import FilmCardPresenter from "./filmCard";
+import FilmPopupPresenter from "./filmPopup";
 
 const FILM_PER_PAGE = 5;
 const FILM_RATED_COUNT = 2;
+const siteBody = document.querySelector(`body`);
 
 export default class FilmsPresenter {
   constructor(filmsContainer) {
@@ -28,6 +30,9 @@ export default class FilmsPresenter {
     this._handleSortItemClick = this._handleSortItemClick.bind(this);
     this._handleFilterItemClick = this._handleFilterItemClick.bind(this);
     this._handleFilmChange = this._handleFilmChange.bind(this);
+    this._handlePopupDisplay = this._handlePopupDisplay.bind(this);
+    this._handlePopupChange = this._handlePopupChange.bind(this);
+    this._popup = new FilmPopupPresenter(siteBody, this._handlePopupChange);
     this._sortType = {
       sort: `default`,
       filter: `all`,
@@ -42,9 +47,16 @@ export default class FilmsPresenter {
     this._renderFilmsContainer();
   }
 
-  update(films) {
-    this._films = films;
+  update() {
     this._mainFilmList.innerHTML = ``;
+    let updatedFilms = this._sourcedFilms;
+    if (this._sortType.filter !== `all`) {
+      updatedFilms = this._sourcedFilms.filter((film) => film[this._sortType.filter]);
+    }
+    if (this._sortType.sort !== `default`) {
+      updatedFilms.sort(compareValues(this._sortType.sort, `desc`));
+    }
+    this._films = updatedFilms;
     this._renderFilms();
   }
 
@@ -54,10 +66,10 @@ export default class FilmsPresenter {
   }
 
   _handleFilterItemClick(evt) {
-    let param = evt.target.getAttribute(`data-sort`);
+    this._sortType.filter = evt.target.getAttribute(`data-sort`);
     this._menu.getActiveMenuLink().classList.remove(`main-navigation__item--active`);
     evt.target.classList.add(`main-navigation__item--active`);
-    this._filteredFilms(param);
+    this.update();
   }
 
   _renderSort() {
@@ -68,8 +80,8 @@ export default class FilmsPresenter {
   _handleSortItemClick(evt) {
     this._sortPanel.getActiveMenuLink().classList.remove(`sort__button--active`);
     evt.target.classList.add(`sort__button--active`);
-    let param = evt.target.getAttribute(`data-sort`);
-    this._sortedFilms(param);
+    this._sortType.sort = evt.target.getAttribute(`data-sort`);
+    this.update();
   }
 
   _renderFilmsContainer() {
@@ -82,7 +94,7 @@ export default class FilmsPresenter {
   }
 
   _renderCard(film, container) {
-    const filmPresenter = new FilmCardPresenter(container, this._handleFilmChange);
+    const filmPresenter = new FilmCardPresenter(container, this._handleFilmChange, this._handlePopupDisplay);
     filmPresenter.init(film);
     this._filmPresenter[film.id] = filmPresenter;
   }
@@ -137,38 +149,18 @@ export default class FilmsPresenter {
     return this._films.slice().sort(compareValues(`comments`, `desc`)).slice(0, FILM_RATED_COUNT);
   }
 
-  _sortedFilms(param) {
-    this._sortType.sort = param;
-    console.log(this._sortType);
-    let sorted;
-    if (param !== `default`) {
-      sorted = this._sourcedFilms.slice().sort(compareValues(param, `desc`));
-    } else {
-      sorted = this._sourcedFilms;
-    }
-    if (this._sortType.filter !== `all`) {
-      sorted = sorted.filter((film) => film[this._sortType.filter] === true);
-    }
-    this.update(sorted);
-  }
-
-  _filteredFilms(param) {
-    this._sortType.filter = param;
-    console.log(this._sortType);
-    let filtered;
-    if (param !== `all`) {
-      filtered = this._sourcedFilms.slice().filter((film) => film[param] === true);
-    } else {
-      filtered = this._sourcedFilms;
-    }
-    if (this._sortType.sort !== `default`) {
-      filtered = filtered.sort(compareValues(this._sortType.sort, `desc`));
-    }
-    this.update(filtered);
-  }
-
   _handleFilmChange(updatedFilm) {
     this._films = updateItem(this._films, updatedFilm);
     this._filmPresenter[updatedFilm.id].init(updatedFilm);
+  }
+
+  _handlePopupDisplay(film) {
+    this._popup.init(film);
+  }
+
+  _handlePopupChange(updatedFilm) {
+    this._films = updateItem(this._films, updatedFilm);
+    this._filmPresenter[updatedFilm.id].init(updatedFilm);
+    this._popup.init(updatedFilm);
   }
 }

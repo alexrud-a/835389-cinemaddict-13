@@ -1,16 +1,13 @@
 import {render, RenderPosition} from "../utils";
 import CardFilm from "../view/film-card";
-import FilmPopupPresenter from "./filmPopup";
-
-const siteBody = document.querySelector(`body`);
 
 export default class FilmCardPresenter {
-  constructor(filmContainer, changeData) {
+  constructor(filmContainer, changeData, showPopup) {
     this._filmContainer = filmContainer;
     this._film = null;
     this._card = null;
-    this._popup = new FilmPopupPresenter(siteBody);
     this._changeData = changeData;
+    this._showPopup = showPopup;
   }
 
   init(film) {
@@ -18,24 +15,19 @@ export default class FilmCardPresenter {
 
     const prevCard = this._card;
     this._card = new CardFilm(this._film);
-    this._card.setClickHandler(() => this._showPopup());
+    this._card.setClickHandler(() => this._showPopup(this._film));
     this._card.setEditClickHandler((evt) => this._clickFilmInfo(evt));
 
-    if (prevCard === null) {
-      this._renderCard();
-      return;
+    if (prevCard) {
+      prevCard.getElement().remove();
+      prevCard.removeElement();
     }
 
-    prevCard.getElement().remove();
-    prevCard.removeElement();
+    this._renderCard();
   }
 
   _renderCard() {
     render(this._filmContainer, this._card.getElement(), RenderPosition.BEFOREEND);
-  }
-
-  _showPopup() {
-    this._popup.init(this._film);
   }
 
   _clickFilmInfo(evt) {
