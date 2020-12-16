@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import AbstractView from "./abstract";
+import Smart from "./smart";
 
 const createCardFilmTemplate = (film) => {
   const {id, info, time, date, rating, isFavorite, isViewed, isWatchlist, genre, comments, description} = film;
@@ -39,23 +39,40 @@ const createCardFilmTemplate = (film) => {
           <p class="film-card__description">${sliceDescription()}</p>
           <a class="js-open-popup film-card__comments">${comments.length} comments</a>
           <div class="film-card__controls">
-            <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist ${watchlistClassName}" type="button">Add to watchlist</button>
-            <button class="film-card__controls-item button film-card__controls-item--mark-as-watched ${watchedClassName}" type="button">Mark as watched</button>
-            <button class="film-card__controls-item button film-card__controls-item--favorite ${favoriteClassName}" type="button">Mark as favorite</button>
+            <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist ${watchlistClassName}" type="button" data-type="isWatchlist">Add to watchlist</button>
+            <button class="film-card__controls-item button film-card__controls-item--mark-as-watched ${watchedClassName}" type="button" data-type="isViewed">Mark as watched</button>
+            <button class="film-card__controls-item button film-card__controls-item--favorite ${favoriteClassName}" type="button" data-type="isFavorite">Mark as favorite</button>
           </div>
         </article>`;
 };
 
-export default class CardFilm extends AbstractView {
+export default class CardFilm extends Smart {
   constructor(film) {
     super();
     this._element = null;
     this._clickHandler = this._clickHandler.bind(this);
+    this._editClickHandler = this._editClickHandler.bind(this);
     this._film = film;
+    this._data = CardFilm.parseFilmToData(film);
   }
 
   getTemplate() {
     return createCardFilmTemplate(this._film);
+  }
+
+  reset(film) {
+    this.updateData(CardFilm.parseFilmToData(film));
+  }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.setClickHandler(this._callback.click);
+  }
+
+  _setInnerHandlers() {
+    for (let btn of this.getElement().querySelectorAll(`.js-open-popup`)) {
+      btn.addEventListener(`click`, this._clickHandler);
+    }
   }
 
   setClickHandler(callback) {
@@ -63,5 +80,39 @@ export default class CardFilm extends AbstractView {
     for (let btn of this.getElement().querySelectorAll(`.js-open-popup`)) {
       btn.addEventListener(`click`, this._clickHandler);
     }
+  }
+
+  _editClickHandler(evt) {
+    evt.preventDefault();
+    let type = evt.target.getAttribute(`data-type`);
+    this._callback.editClick(evt, CardFilm.parseDataToFilm(this._data));
+    this.updateData({
+      [type]: !this._film[type]
+    });
+  }
+
+  setEditClickHandler(callback) {
+    this._callback.editClick = callback;
+    for (let control of this.getElement().querySelectorAll(`.film-card__controls-item`)) {
+      control.addEventListener(`click`, this._editClickHandler);
+    }
+  }
+
+  static parseFilmToData(film) {
+    return Object.assign({}, film, {
+      isFavorite: film.isFavorite,
+      isViewed: film.isViewed,
+      isWatchlist: film.isWatchlist,
+    });
+  }
+
+  static parseDataToFilm(data) {
+    data = Object.assign({}, data);
+
+    delete data.isFavorite;
+    delete data.isWatchlist;
+    delete data.isViewed;
+
+    return data;
   }
 }
