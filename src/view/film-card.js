@@ -60,18 +60,18 @@ export default class CardFilm extends Smart {
     return createCardFilmTemplate(this._film);
   }
 
-  reset(film) {
-    this.updateData(CardFilm.parseFilmToData(film));
-  }
-
   restoreHandlers() {
     this._setInnerHandlers();
     this.setClickHandler(this._callback.click);
+    this.setEditClickHandler(this._callback.editClick);
   }
 
   _setInnerHandlers() {
     for (let btn of this.getElement().querySelectorAll(`.js-open-popup`)) {
       btn.addEventListener(`click`, this._clickHandler);
+    }
+    for (let control of this.getElement().querySelectorAll(`.film-card__controls-item`)) {
+      control.addEventListener(`click`, this._editClickHandler);
     }
   }
 
@@ -85,7 +85,7 @@ export default class CardFilm extends Smart {
   _editClickHandler(evt) {
     evt.preventDefault();
     let type = evt.target.getAttribute(`data-type`);
-    this._callback.editClick(evt, CardFilm.parseDataToFilm(this._data));
+    this._callback.editClick(evt, CardFilm.parseDataToFilm(this._film));
     this.updateData({
       [type]: !this._film[type]
     });

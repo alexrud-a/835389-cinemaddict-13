@@ -118,6 +118,7 @@ export default class Popup extends Smart {
   restoreHandlers() {
     this._setInnerHandlers();
     this.setClickHandler(this._callback.click);
+    this.setEditClickHandler(this._callback.editClick);
   }
 
   _setInnerHandlers() {

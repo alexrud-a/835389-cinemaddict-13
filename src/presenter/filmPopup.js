@@ -1,6 +1,6 @@
 import Popup from "../view/popup";
 import Comments from "../view/comments";
-import {render, RenderPosition} from "../utils";
+import {remove, render, RenderPosition, replace} from "../utils";
 
 export default class FilmPopupPresenter {
   constructor(container, changeData) {
@@ -16,17 +16,6 @@ export default class FilmPopupPresenter {
     const prevPopup = this._popup;
     this._popup = new Popup(this._film);
     this._popup.setEditClickHandler((evt) => this._clickFilmInfo(evt));
-
-    if (prevPopup) {
-      prevPopup.getElement().remove();
-      prevPopup.removeElement();
-    }
-
-    this._renderPopup();
-  }
-
-  _renderPopup() {
-    render(this._container, this._popup.getElement(), RenderPosition.BEFOREEND);
     const commentsList = new Comments(this._film.comments);
     render(this._popup.getCommentsContainer(), commentsList.getElement(), RenderPosition.BEFOREEND);
     this._container.classList.add(`hide-overflow`);
@@ -38,6 +27,19 @@ export default class FilmPopupPresenter {
         this.close();
       }
     });
+
+    if (prevPopup) {
+      replace(this._popup, prevPopup);
+    } else {
+      this._renderPopup();
+      return;
+    }
+
+    remove(prevPopup);
+  }
+
+  _renderPopup() {
+    render(this._container, this._popup.getElement(), RenderPosition.BEFOREEND);
   }
 
   _clickFilmInfo(evt) {
