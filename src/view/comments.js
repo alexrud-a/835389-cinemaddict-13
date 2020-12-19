@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import Smart from "./smart";
-import {createElement, render, RenderPosition, replace} from "../utils";
+import {createElement, render, RenderPosition} from "../utils";
 
 const createCommentTemplate = (comment) => {
   const {info: {emotion, text, author}, date, id} = comment;
