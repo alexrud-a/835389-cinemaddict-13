@@ -109,6 +109,7 @@ export default class Popup extends Smart {
     this._editClickHandler = this._editClickHandler.bind(this);
     this._film = film;
     this._data = Popup.parseFilmToData(film);
+    this._setInnerHandlers();
   }
 
   getTemplate() {

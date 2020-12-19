@@ -15,21 +15,13 @@ export default class FilmPopupPresenter {
 
     const prevPopup = this._popup;
     this._popup = new Popup(this._film);
-    this._popup.setEditClickHandler((evt) => this._clickFilmInfo(evt));
-    const commentsList = new Comments(this._film.comments);
-    render(this._popup.getCommentsContainer(), commentsList.getElement(), RenderPosition.BEFOREEND);
-    this._container.classList.add(`hide-overflow`);
-    this._popup.setClickHandler(() => this.close());
-    this._popup.setEditClickHandler((evt) => this._clickFilmInfo(evt));
-    document.addEventListener(`keydown`, (evt) => {
-      if (evt.key === `Escape` || evt.key === `Esc`) {
-        evt.preventDefault();
-        this.close();
-      }
-    });
 
-    if (prevPopup) {
+    if (prevPopup && this._container.classList.contains(`hide-overflow`)) {
       replace(this._popup, prevPopup);
+      this._container.classList.add(`hide-overflow`);
+      this._callbacks();
+      this._renderComments();
+      this._popup.restoreHandlers();
     } else {
       this._renderPopup();
       return;
@@ -40,6 +32,25 @@ export default class FilmPopupPresenter {
 
   _renderPopup() {
     render(this._container, this._popup.getElement(), RenderPosition.BEFOREEND);
+    this._container.classList.add(`hide-overflow`);
+    this._callbacks();
+    this._renderComments();
+  }
+
+  _callbacks() {
+    this._popup.setEditClickHandler((evt) => this._clickFilmInfo(evt));
+    this._popup.setClickHandler(() => this.close());
+    document.addEventListener(`keydown`, (evt) => {
+      if (evt.key === `Escape` || evt.key === `Esc`) {
+        evt.preventDefault();
+        this.close();
+      }
+    });
+  }
+
+  _renderComments() {
+    const commentsList = new Comments(this._film.comments);
+    render(this._popup.getCommentsContainer(), commentsList.getElement(), RenderPosition.BEFOREEND);
   }
 
   _clickFilmInfo(evt) {
@@ -48,8 +59,7 @@ export default class FilmPopupPresenter {
   }
 
   close() {
-    this._popup.getElement().remove();
-    this._popup.removeElement();
+    remove(this._popup);
     this._container.classList.remove(`hide-overflow`);
   }
 }
