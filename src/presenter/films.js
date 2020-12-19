@@ -2,7 +2,7 @@ import SiteMenu from "../view/menu";
 import SortPanel from "../view/sort-panel";
 import FilmList from "../view/films-list";
 import Loadmore from "../view/loadmore";
-import {render, RenderPosition, compareValues, updateItem, remove} from "../utils";
+import {render, RenderPosition, compareValues, updateItem} from "../utils";
 
 import FilmCardPresenter from "./filmCard";
 import FilmPopupPresenter from "./filmPopup";
