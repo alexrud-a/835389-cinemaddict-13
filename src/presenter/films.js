@@ -32,7 +32,8 @@ export default class FilmsPresenter {
     this._handleFilmChange = this._handleFilmChange.bind(this);
     this._handlePopupDisplay = this._handlePopupDisplay.bind(this);
     this._handlePopupChange = this._handlePopupChange.bind(this);
-    this._popup = new FilmPopupPresenter(siteBody, this._handlePopupChange);
+    this._handlePopupRemoveComment = this._handlePopupRemoveComment.bind(this);
+    this._popup = new FilmPopupPresenter(siteBody, this._handlePopupChange, this._handlePopupRemoveComment);
     this._sortType = {
       sort: `default`,
       filter: `all`,
@@ -156,6 +157,12 @@ export default class FilmsPresenter {
 
   _handlePopupDisplay(film) {
     this._popup.init(film);
+  }
+
+  _handlePopupRemoveComment(updatedFilm) {
+    this._films = updateItem(this._sourcedFilms, updatedFilm);
+    this._filmPresenter[updatedFilm.id].init(updatedFilm);
+    this._popup.init(updatedFilm);
   }
 
   _handlePopupChange(updatedFilm) {

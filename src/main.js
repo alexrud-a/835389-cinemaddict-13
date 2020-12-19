@@ -3,7 +3,7 @@ import FilmsPresenter from "./presenter/films";
 import EmptyPresenter from "./presenter/empty";
 import FooterPresenter from "./presenter/footer";
 
-const FILM_COUNT = 0;
+const FILM_COUNT = 22;
 
 const films = new Array(FILM_COUNT).fill().map(generateFilm);
 
