@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import Smart from "./smart";
+import Base from "./abstract";
 
 const createCardFilmTemplate = (film) => {
   const {id, info, time, date, rating, isFavorite, isViewed, isWatchlist, genre, comments, description} = film;
@@ -46,33 +46,17 @@ const createCardFilmTemplate = (film) => {
         </article>`;
 };
 
-export default class CardFilm extends Smart {
+export default class CardFilm extends Base {
   constructor(film) {
     super();
     this._element = null;
     this._clickHandler = this._clickHandler.bind(this);
     this._editClickHandler = this._editClickHandler.bind(this);
     this._film = film;
-    this._data = CardFilm.parseFilmToData(film);
   }
 
   getTemplate() {
     return createCardFilmTemplate(this._film);
-  }
-
-  reset(film) {
-    this.updateData(CardFilm.parseFilmToData(film));
-  }
-
-  restoreHandlers() {
-    this._setInnerHandlers();
-    this.setClickHandler(this._callback.click);
-  }
-
-  _setInnerHandlers() {
-    for (let btn of this.getElement().querySelectorAll(`.js-open-popup`)) {
-      btn.addEventListener(`click`, this._clickHandler);
-    }
   }
 
   setClickHandler(callback) {
@@ -84,11 +68,7 @@ export default class CardFilm extends Smart {
 
   _editClickHandler(evt) {
     evt.preventDefault();
-    let type = evt.target.getAttribute(`data-type`);
-    this._callback.editClick(evt, CardFilm.parseDataToFilm(this._data));
-    this.updateData({
-      [type]: !this._film[type]
-    });
+    this._callback.editClick(evt);
   }
 
   setEditClickHandler(callback) {
@@ -96,23 +76,5 @@ export default class CardFilm extends Smart {
     for (let control of this.getElement().querySelectorAll(`.film-card__controls-item`)) {
       control.addEventListener(`click`, this._editClickHandler);
     }
-  }
-
-  static parseFilmToData(film) {
-    return Object.assign({}, film, {
-      isFavorite: film.isFavorite,
-      isViewed: film.isViewed,
-      isWatchlist: film.isWatchlist,
-    });
-  }
-
-  static parseDataToFilm(data) {
-    data = Object.assign({}, data);
-
-    delete data.isFavorite;
-    delete data.isWatchlist;
-    delete data.isViewed;
-
-    return data;
   }
 }

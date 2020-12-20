@@ -1,4 +1,4 @@
-import {render, RenderPosition} from "../utils";
+import {render, replace, remove, RenderPosition} from "../utils";
 import CardFilm from "../view/film-card";
 
 export default class FilmCardPresenter {
@@ -19,11 +19,13 @@ export default class FilmCardPresenter {
     this._card.setEditClickHandler((evt) => this._clickFilmInfo(evt));
 
     if (prevCard) {
-      prevCard.getElement().remove();
-      prevCard.removeElement();
+      replace(this._card, prevCard);
+    } else {
+      this._renderCard();
+      return;
     }
 
-    this._renderCard();
+    remove(prevCard);
   }
 
   _renderCard() {

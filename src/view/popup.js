@@ -109,6 +109,7 @@ export default class Popup extends Smart {
     this._editClickHandler = this._editClickHandler.bind(this);
     this._film = film;
     this._data = Popup.parseFilmToData(film);
+    this._setInnerHandlers();
   }
 
   getTemplate() {
@@ -118,6 +119,7 @@ export default class Popup extends Smart {
   restoreHandlers() {
     this._setInnerHandlers();
     this.setClickHandler(this._callback.click);
+    this.setEditClickHandler(this._callback.editClick);
   }
 
   _setInnerHandlers() {

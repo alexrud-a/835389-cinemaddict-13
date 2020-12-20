@@ -1,3 +1,5 @@
+import Base from "./view/abstract";
+
 export const RenderPosition = {
   AFTERBEGIN: `afterbegin`,
   BEFOREEND: `beforeend`
@@ -12,6 +14,24 @@ export const render = (container, element, place) => {
       container.append(element);
       break;
   }
+};
+
+export const replace = (newChild, oldChild) => {
+  if (oldChild instanceof Base) {
+    oldChild = oldChild.getElement();
+  }
+
+  if (newChild instanceof Base) {
+    newChild = newChild.getElement();
+  }
+
+  const parent = oldChild.parentElement;
+
+  if (parent === null || oldChild === null || newChild === null) {
+    throw new Error(`Can't replace unexisting elements`);
+  }
+
+  parent.replaceChild(newChild, oldChild);
 };
 
 export const createElement = (template) => {
@@ -62,4 +82,12 @@ export const updateItem = (items, update) => {
     update,
     ...items.slice(index + 1)
   ];
+};
+
+export const remove = (component) => {
+  if (!(component instanceof Base)) {
+    throw new Error(`Can remove only components`);
+  }
+  component.getElement().remove();
+  component.removeElement();
 };
