@@ -1,14 +1,16 @@
 import Popup from "../view/popup";
 import Comments from "../view/comments";
 import {remove, render, RenderPosition, replace} from "../utils";
+import {nanoid} from "nanoid";
 
 export default class FilmPopupPresenter {
-  constructor(container, changeData, deleteComment) {
+  constructor(container, changeData, deleteComment, addComment) {
     this._container = container;
     this._film = null;
     this._popup = null;
     this._changeData = changeData;
     this._deleteComment = deleteComment;
+    this._addComment = addComment;
     this._commentsList = {};
   }
 
@@ -52,6 +54,12 @@ export default class FilmPopupPresenter {
         this.close();
       }
     });
+    document.addEventListener(`keydown`, (evt) => {
+      if ((evt.ctrlKey) && ((evt.keyCode === 0xA) || (evt.keyCode === 0xD))) {
+        evt.preventDefault();
+        this.submitFormComments();
+      }
+    });
   }
 
   _renderComments() {
@@ -85,5 +93,30 @@ export default class FilmPopupPresenter {
 
   getPositionScroll() {
     return document.querySelector(`.film-details`).scrollTop;
+  }
+
+  submitFormComments() {
+    let posScroll = this.getPositionScroll();
+    let text = this._popup.getElement().querySelector(`.film-details__comment-input`);
+    const emotions = document.querySelectorAll(`.film-details__emoji-item`);
+    let currentEmotion;
+    for (let emotion of emotions) {
+      if (emotion.checked) {
+        currentEmotion = emotion.value;
+      }
+    }
+    if (currentEmotion !== null && (text !== `` || text !== null)) {
+      let newComment = {
+        id: nanoid(),
+        info: {
+          text: text.value,
+          author: ``,
+          emotion: currentEmotion
+        },
+        date: new Date(),
+      };
+      this._film.comments.push(newComment);
+      this._addComment(Object.assign({}, this._film, {comments: this._film.comments}), posScroll);
+    }
   }
 }
