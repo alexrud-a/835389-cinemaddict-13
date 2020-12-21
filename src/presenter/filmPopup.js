@@ -45,7 +45,7 @@ export default class FilmPopupPresenter {
     this._popup.setEditClickHandler((evt) => this._clickFilmInfo(evt));
     this._popup.setClickHandler(() => this.close());
     this._commentsList.setDeleteCommentHandler((evt) => this._removeFilmComment(evt));
-    this._commentsList.setAddCommentEmotionHandler((evt) => this._addFilmCommenEmotiont(evt));
+    this._commentsList.setAddCommentEmotionHandler((evt) => this._addFilmCommentEmotion(evt));
     document.addEventListener(`keydown`, (evt) => {
       if (evt.key === `Escape` || evt.key === `Esc`) {
         evt.preventDefault();
@@ -59,18 +59,20 @@ export default class FilmPopupPresenter {
   }
 
   _clickFilmInfo(evt) {
+    let posScroll = this.getPositionScroll();
     let type = evt.target.getAttribute(`data-type`);
-    this._changeData(Object.assign({}, this._film, {[type]: !this._film[type]}));
+    this._changeData(Object.assign({}, this._film, {[type]: !this._film[type]}), posScroll);
   }
 
   _removeFilmComment(evt) {
+    let posScroll = this.getPositionScroll();
     let commentId = evt.target.closest(`.film-details__comment`).getAttribute(`id`);
     let commentInd = this._film.comments.findIndex((item) => item.id === commentId);
     this._film.comments.splice(commentInd, 1);
-    this._deleteComment(Object.assign({}, this._film, {comments: this._film.comments}));
+    this._deleteComment(Object.assign({}, this._film, {comments: this._film.comments}), posScroll);
   }
 
-  _addFilmCommenEmotiont(evt) {
+  _addFilmCommentEmotion(evt) {
     const labelEmotion = this._commentsList.getElement().querySelector(`.film-details__add-emoji-label`);
     const emotion = evt.target.value;
     this._commentsList.renderEmotion(labelEmotion, emotion);
@@ -79,5 +81,9 @@ export default class FilmPopupPresenter {
   close() {
     remove(this._popup);
     this._container.classList.remove(`hide-overflow`);
+  }
+
+  getPositionScroll() {
+    return document.querySelector(`.film-details`).scrollTop;
   }
 }

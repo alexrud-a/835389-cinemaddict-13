@@ -93,11 +93,19 @@ export default class Comments extends Smart {
     this.setAddCommentEmotionHandler(this._callback.addClickEmotion);
   }
 
+  getLinksDelete() {
+    return this.getElement().querySelectorAll(`.film-details__comment-delete`);
+  }
+
+  getInputsEmoji() {
+    return this.getElement().querySelectorAll(`.film-details__emoji-item`);
+  }
+
   _setInnerHandlers() {
-    for (let link of this.getElement().querySelectorAll(`.film-details__comment-delete`)) {
+    for (let link of this.getLinksDelete()) {
       link.addEventListener(`click`, this._deleteClickComment);
     }
-    for (let inp of this.getElement().querySelectorAll(`.film-details__emoji-item`)) {
+    for (let inp of this.getInputsEmoji()) {
       inp.addEventListener(`change`, this._addCommentEmotion);
     }
   }
@@ -109,7 +117,7 @@ export default class Comments extends Smart {
 
   setDeleteCommentHandler(callback) {
     this._callback.removeClick = callback;
-    for (let link of this.getElement().querySelectorAll(`.film-details__comment-delete`)) {
+    for (let link of this.getLinksDelete()) {
       link.addEventListener(`click`, this._deleteClickComment);
     }
   }
@@ -127,7 +135,7 @@ export default class Comments extends Smart {
 
   setAddCommentEmotionHandler(callback) {
     this._callback.addClickEmotion = callback;
-    for (let inp of this.getElement().querySelectorAll(`.film-details__emoji-item`)) {
+    for (let inp of this.getInputsEmoji()) {
       inp.addEventListener(`change`, this._addCommentEmotion);
     }
   }

@@ -25,11 +25,11 @@ export const replace = (newChild, oldChild) => {
     newChild = newChild.getElement();
   }
 
-  const parent = oldChild.parentElement;
-
-  if (parent === null || oldChild === null || newChild === null) {
+  if (oldChild === null || newChild === null) {
     throw new Error(`Can't replace unexisting elements`);
   }
+
+  const parent = oldChild.parentElement;
 
   parent.replaceChild(newChild, oldChild);
 };

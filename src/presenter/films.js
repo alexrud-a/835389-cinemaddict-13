@@ -159,15 +159,17 @@ export default class FilmsPresenter {
     this._popup.init(film);
   }
 
-  _handlePopupRemoveComment(updatedFilm) {
+  _handlePopupRemoveComment(updatedFilm, posScroll) {
     this._films = updateItem(this._sourcedFilms, updatedFilm);
     this._filmPresenter[updatedFilm.id].init(updatedFilm);
     this._popup.init(updatedFilm);
+    document.querySelector(`.film-details`).scrollTop = posScroll;
   }
 
-  _handlePopupChange(updatedFilm) {
+  _handlePopupChange(updatedFilm, posScroll) {
     this._films = updateItem(this._sourcedFilms, updatedFilm);
     this._filmPresenter[updatedFilm.id].init(updatedFilm);
     this._popup.init(updatedFilm);
+    document.querySelector(`.film-details`).scrollTop = posScroll;
   }
 }
