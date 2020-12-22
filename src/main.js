@@ -7,13 +7,6 @@ const FILM_COUNT = 22;
 
 const films = new Array(FILM_COUNT).fill().map(generateFilm);
 
-const sortInfo = {
-  watchlist: films.filter((item) => item.isWatchlist).length,
-  history: films.filter((item) => item.isViewed).length,
-  favorites: films.filter((item) => item.isFavorite).length,
-};
-
-
 const siteBody = document.querySelector(`body`);
 const siteMainElement = siteBody.querySelector(`.main`);
 const siteFooterStatistics = siteBody.querySelector(`.footer__statistics`);
@@ -23,9 +16,9 @@ const emptyPresenter = new EmptyPresenter(siteMainElement);
 
 
 if (films.length > 0) {
-  filmsPresenter.init(films, sortInfo);
+  filmsPresenter.init(films);
 } else {
-  emptyPresenter.init(sortInfo);
+  emptyPresenter.init();
 }
 
 const footerPresenter = new FooterPresenter(siteFooterStatistics);
