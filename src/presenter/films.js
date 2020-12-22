@@ -1,3 +1,4 @@
+import Profile from "../view/profile";
 import SiteMenu from "../view/menu";
 import SortPanel from "../view/sort-panel";
 import FilmList from "../view/films-list";
@@ -17,6 +18,7 @@ export default class FilmsPresenter {
     this._filmsContainer = filmsContainer;
     this._renderedFilmsCount = FILM_PER_PAGE;
     this._films = null;
+    this._profile = null;
     this._sort = {};
     this._menu = null;
     this._filmPresenter = {};
@@ -40,6 +42,7 @@ export default class FilmsPresenter {
       sort: `default`,
       filter: `all`,
     };
+    this._historyCount = null;
   }
 
   init(films) {
@@ -50,12 +53,20 @@ export default class FilmsPresenter {
       history: this._films.filter((item) => item.isViewed).length,
       favorites: this._films.filter((item) => item.isFavorite).length,
     };
+    this._historyCount = this._sourcedFilms.filter((item) => item.isViewed).length;
+    if (this._historyCount > 0) {
+      this._renderProfile();
+    }
     this._renderFilmsContainer();
   }
 
-  update() {
+  update(renderedFilms) {
     this._clearList();
+    if (renderedFilms) {
+      this._renderedFilmsCount = renderedFilms;
+    }
     let updatedFilms = this._sourcedFilms;
+    this._historyCount = this._sourcedFilms.filter((item) => item.isViewed).length;
     if (this._sortType.filter !== `all`) {
       updatedFilms = this._sourcedFilms.filter((film) => film[this._sortType.filter]);
     }
@@ -66,6 +77,16 @@ export default class FilmsPresenter {
     this._renderFilms();
     this._renderRatedFilms();
     this._renderCommentedFilms();
+  }
+
+  _renderProfile() {
+    const prevProfile = this._profile;
+    this._profile = new Profile(this._sort.history);
+    if (prevProfile) {
+      replace(this._profile, prevProfile);
+    } else {
+      render(siteBody.querySelector(`.header`), this._profile.getElement(), RenderPosition.BEFOREEND);
+    }
   }
 
   _renderMenu() {
@@ -141,7 +162,7 @@ export default class FilmsPresenter {
   }
 
   _renderFilms() {
-    this._renderFilmList(0, Math.min(this._films.length, FILM_PER_PAGE));
+    this._renderFilmList(0, Math.min(this._films.length, this._renderedFilmsCount));
 
     if (this._films.length > FILM_PER_PAGE) {
       this._renderLoadMore();
@@ -174,9 +195,11 @@ export default class FilmsPresenter {
     this._sourcedFilms = updateItem(this._sourcedFilms, updatedFilm);
     this._films = updateItem(this._sourcedFilms, updatedFilm);
     if (!updatedFilm[this._sortType.filter]) {
-      this.update();
+      this.update(this._renderedFilmsCount);
+      this._renderProfile();
       this._renderMenu(this._filmsContainer);
     } else {
+      this._renderProfile();
       this._renderMenu(this._filmsContainer);
       this._filmPresenter[updatedFilm.id].init(updatedFilm);
     }
@@ -201,6 +224,7 @@ export default class FilmsPresenter {
     } else {
       this._filmPresenter[updatedFilm.id].init(updatedFilm);
     }
+    this._renderProfile();
     this._renderMenu(this._filmsContainer);
     this._popup.init(updatedFilm);
     document.querySelector(`.film-details`).scrollTop = posScroll;
