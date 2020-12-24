@@ -40,7 +40,9 @@ export default class FilmPopupPresenter {
     render(this._container, this._popup.getElement(), RenderPosition.BEFOREEND);
     this._container.classList.add(`hide-overflow`);
     this._callbacks();
+    this._handlerFormSubmit();
     this._renderComments();
+
   }
 
   _callbacks() {
@@ -54,8 +56,11 @@ export default class FilmPopupPresenter {
         this.close();
       }
     });
+  }
+
+  _handlerFormSubmit() {
     document.addEventListener(`keydown`, (evt) => {
-      if ((evt.ctrlKey) && ((evt.keyCode === 0xA) || (evt.keyCode === 0xD))) {
+      if ((evt.ctrlKey) && ((evt.code === `Enter`) || (evt.code === `Enter`))) {
         evt.preventDefault();
         this.submitFormComments();
       }

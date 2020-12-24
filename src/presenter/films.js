@@ -141,6 +141,8 @@ export default class FilmsPresenter {
 
   _renderFilmList(from, to) {
     this._films
+      .filter((item) => item.id !== this._filmsRated()[0].id && item.id !== this._filmsRated()[1].id)
+      .filter((item) => item.id !== this._filmsCommented()[0].id && item.id !== this._filmsCommented()[1].id)
       .slice(from, to)
       .forEach((film) => this._renderCard(film, this._mainFilmList));
   }
@@ -154,7 +156,7 @@ export default class FilmsPresenter {
     this._renderFilmList(this._renderedFilmsCount, this._renderedFilmsCount + FILM_PER_PAGE);
     this._renderedFilmsCount += FILM_PER_PAGE;
 
-    if (this._renderedFilmsCount >= this._films.length) {
+    if (this._renderedFilmsCount >= (this._films.length - 4)) {
       this._loadMore.getElement().remove();
       this._loadMore.removeElement();
       this._renderedFilmsCount = FILM_PER_PAGE;
@@ -171,14 +173,12 @@ export default class FilmsPresenter {
 
   _renderRatedFilms() {
     for (let i = 0; i < FILM_RATED_COUNT; i++) {
-      this._filmsRated()[i].id = nanoid();
       this._renderCard(this._filmsRated()[i], this._topRatedFilmList);
     }
   }
 
   _renderCommentedFilms() {
     for (let i = 0; i < FILM_RATED_COUNT; i++) {
-      this._filmsCommented()[i].id = nanoid();
       this._renderCard(this._filmsCommented()[i], this._topCommentedFilmList);
     }
   }
