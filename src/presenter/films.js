@@ -12,10 +12,12 @@ const FILM_PER_PAGE = 5;
 const siteBody = document.querySelector(`body`);
 
 export default class FilmsPresenter {
-  constructor(filmsContainer) {
+  constructor(filmsContainer, filmsModel) {
     this._filmsContainer = filmsContainer;
+    this._filmsModel = filmsModel;
+    this._films = [];
     this._renderedFilmsCount = FILM_PER_PAGE;
-    this._films = null;
+    this._sourcedFilms = [];
     this._profile = null;
     this._sort = {};
     this._menu = null;
@@ -40,9 +42,9 @@ export default class FilmsPresenter {
     };
   }
 
-  init(films) {
-    this._films = films.slice();
-    this._sourcedFilms = films.slice();
+  init() {
+    this._sourcedFilms = this._filmsModel.getFilms();
+    this._films = this._filmsModel.getFilms();
     this._sort = {
       watchlist: this._sourcedFilms.filter((item) => item.isWatchlist).length,
       history: this._sourcedFilms.filter((item) => item.isViewed).length,
