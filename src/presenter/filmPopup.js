@@ -11,7 +11,8 @@ export default class FilmPopupPresenter {
     this._changeData = changeData;
     this._deleteComment = deleteComment;
     this._addComment = addComment;
-    this._commentsList = {};
+    this._commentsList = null;
+    this._posScroll = null;
   }
 
   init(film) {
@@ -24,10 +25,11 @@ export default class FilmPopupPresenter {
     if (prevPopup && this._container.classList.contains(`hide-overflow`)) {
       replace(this._popup, prevPopup);
       this._container.classList.add(`hide-overflow`);
-      this._callbacks();
+      this.restoreHandlers();
       this._renderComments();
       this._popup.restoreHandlers();
       this._commentsList.restoreHandlers();
+      document.querySelector(`.film-details`).scrollTop = this._posScroll;
     } else {
       this._renderPopup();
       return;
@@ -39,13 +41,13 @@ export default class FilmPopupPresenter {
   _renderPopup() {
     render(this._container, this._popup.getElement(), RenderPosition.BEFOREEND);
     this._container.classList.add(`hide-overflow`);
-    this._callbacks();
-    this._handlerFormSubmit();
+    this.restoreHandlers();
+    this._handleFormSubmit();
     this._renderComments();
 
   }
 
-  _callbacks() {
+  restoreHandlers() {
     this._popup.setEditClickHandler((evt) => this._clickFilmInfo(evt));
     this._popup.setClickHandler(() => this.close());
     this._commentsList.setDeleteCommentHandler((evt) => this._removeFilmComment(evt));
@@ -58,9 +60,9 @@ export default class FilmPopupPresenter {
     });
   }
 
-  _handlerFormSubmit() {
+  _handleFormSubmit() {
     document.addEventListener(`keydown`, (evt) => {
-      if ((evt.ctrlKey) && ((evt.code === `Enter`) || (evt.code === `Enter`))) {
+      if ((evt.ctrlKey) && (evt.code === `Enter`)) {
         evt.preventDefault();
         this.submitFormComments();
       }
@@ -72,17 +74,17 @@ export default class FilmPopupPresenter {
   }
 
   _clickFilmInfo(evt) {
-    let posScroll = this.getPositionScroll();
+    this._posScroll = this.getPositionScroll();
     let type = evt.target.getAttribute(`data-type`);
-    this._changeData(Object.assign({}, this._film, {[type]: !this._film[type]}), posScroll);
+    this._changeData(Object.assign({}, this._film, {[type]: !this._film[type]}), this._posScroll);
   }
 
   _removeFilmComment(evt) {
-    let posScroll = this.getPositionScroll();
+    this._posScroll = this.getPositionScroll();
     let commentId = evt.target.closest(`.film-details__comment`).getAttribute(`id`);
     let commentInd = this._film.comments.findIndex((item) => item.id === commentId);
     this._film.comments.splice(commentInd, 1);
-    this._deleteComment(Object.assign({}, this._film, {comments: this._film.comments}), posScroll);
+    this._deleteComment(Object.assign({}, this._film, {comments: this._film.comments}), this._posScroll);
   }
 
   _addFilmCommentEmotion(evt) {
@@ -110,7 +112,7 @@ export default class FilmPopupPresenter {
         currentEmotion = emotion.value;
       }
     }
-    if (currentEmotion !== null && (text !== `` || text !== null)) {
+    if (currentEmotion !== null && text) {
       let newComment = {
         id: nanoid(),
         info: {
