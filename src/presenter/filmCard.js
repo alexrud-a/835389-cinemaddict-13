@@ -36,4 +36,8 @@ export default class FilmCardPresenter {
     let type = evt.target.getAttribute(`data-type`);
     this._changeData(Object.assign({}, this._film, {[type]: !this._film[type]}));
   }
+
+  destroy() {
+    remove(this._card);
+  }
 }

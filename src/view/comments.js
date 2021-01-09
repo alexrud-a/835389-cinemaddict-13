@@ -1,9 +1,10 @@
 import dayjs from "dayjs";
-import AbstractView from "./abstract";
+import Smart from "./smart";
+import {createElement, render, RenderPosition} from "../utils";
 
 const createCommentTemplate = (comment) => {
-  const {info: {emotion, text, author}, date} = comment;
-  return `<li class="film-details__comment">
+  const {info: {emotion, text, author}, date, id} = comment;
+  return `<li class="film-details__comment" id="${id}">
             <span class="film-details__comment-emoji">
               <img src="./images/emoji/${emoji(emotion)}" width="55" height="55" alt="emoji-${emotion}">
             </span>
@@ -30,6 +31,10 @@ const emoji = (emotion) => {
       return `smile.png`;
   }
   return null;
+};
+
+const createEmojiLabel = (emotion) => {
+  return `<img src="./images/emoji/${emoji(emotion)}" width="55" height="55" alt="emoji-${emotion}">`;
 };
 
 const createCommentsTemplate = (comments) => {
@@ -69,14 +74,69 @@ const createCommentsTemplate = (comments) => {
         </section>`;
 };
 
-export default class Comments extends AbstractView {
+export default class Comments extends Smart {
   constructor(comments) {
     super();
     this._element = null;
     this._comments = comments;
+    this._deleteClickComment = this._deleteClickComment.bind(this);
+    this._addCommentEmotion = this._addCommentEmotion.bind(this);
   }
 
   getTemplate() {
     return createCommentsTemplate(this._comments);
+  }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.setDeleteCommentHandler(this._callback.removeClick);
+    this.setAddCommentEmotionHandler(this._callback.addClickEmotion);
+  }
+
+  getLinksDelete() {
+    return this.getElement().querySelectorAll(`.film-details__comment-delete`);
+  }
+
+  getInputsEmoji() {
+    return this.getElement().querySelectorAll(`.film-details__emoji-item`);
+  }
+
+  _setInnerHandlers() {
+    for (let link of this.getLinksDelete()) {
+      link.addEventListener(`click`, this._deleteClickComment);
+    }
+    for (let inp of this.getInputsEmoji()) {
+      inp.addEventListener(`change`, this._addCommentEmotion);
+    }
+  }
+
+  _deleteClickComment(evt) {
+    evt.preventDefault();
+    this._callback.removeClick(evt);
+  }
+
+  setDeleteCommentHandler(callback) {
+    this._callback.removeClick = callback;
+    for (let link of this.getLinksDelete()) {
+      link.addEventListener(`click`, this._deleteClickComment);
+    }
+  }
+
+  _addCommentEmotion(evt) {
+    evt.preventDefault();
+    this._callback.addClickEmotion(evt);
+  }
+
+  renderEmotion(labelEmotion, emotion) {
+    const img = createElement(createEmojiLabel(emotion));
+    labelEmotion.innerHTML = ``;
+    render(labelEmotion, img, RenderPosition.BEFOREEND);
+  }
+
+  setAddCommentEmotionHandler(callback) {
+    this._callback.addClickEmotion = callback;
+    for (let inp of this.getInputsEmoji()) {
+      inp.addEventListener(`change`, this._addCommentEmotion);
+    }
   }
 }
