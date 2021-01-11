@@ -2,6 +2,7 @@ import Popup from "../view/popup";
 import Comments from "../view/comments";
 import {remove, render, RenderPosition, replace} from "../utils";
 import {nanoid} from "nanoid";
+import he from "he";
 
 export default class FilmPopupPresenter {
   constructor(container, changeData, deleteComment, addComment) {
@@ -116,7 +117,7 @@ export default class FilmPopupPresenter {
       let newComment = {
         id: nanoid(),
         info: {
-          text: text.value,
+          text: he.encode(text.value),
           author: ``,
           emotion: currentEmotion
         },

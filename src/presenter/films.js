@@ -25,8 +25,6 @@ export default class FilmsPresenter {
     this._mainFilmList = this._filmList.getElement().querySelector(`.js-film-list-main`);
     this._loadMoreContainer = this._filmList.getElement().querySelector(`.js-films-container`);
     this._handleLoadMoreButtonClick = this._handleLoadMoreButtonClick.bind(this);
-    //this._handleSortItemClick = this._handleSortItemClick.bind(this);
-    //this._handleFilterItemClick = this._handleFilterItemClick.bind(this);
     this._handleFilmChange = this._handleFilmChange.bind(this);
     this._handlePopupDisplay = this._handlePopupDisplay.bind(this);
     this._handlePopupChange = this._handlePopupChange.bind(this);

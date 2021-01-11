@@ -1,5 +1,5 @@
 import FilmsPresenter from "./films";
-import {compareValues, remove} from "../utils";
+import {compareValues} from "../utils";
 
 const FILM_PER_PAGE = 2;
 const siteBody = document.querySelector(`body`);
