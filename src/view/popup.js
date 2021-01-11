@@ -113,7 +113,7 @@ export default class Popup extends Smart {
   }
 
   getTemplate() {
-    return createTemplatePopupFilm(this._film);
+    return createTemplatePopupFilm(this._data);
   }
 
   restoreHandlers() {
