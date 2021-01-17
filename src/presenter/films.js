@@ -6,17 +6,22 @@ import {render, RenderPosition, compareValues, remove, replace} from "../utils";
 import FilmCardPresenter from "./filmCard";
 import FilmPopupPresenter from "./filmPopup";
 
-const FILM_PER_PAGE = 5;
 const siteBody = document.querySelector(`body`);
 
 export default class FilmsPresenter {
-  constructor(filmsContainer, filmsModel, filterModel, filterPresenter) {
+  constructor(filmsContainer, filmsModel, filterModel, filterPresenter, filmsPerPage) {
     this._filterPresenter = filterPresenter;
     this._filmsContainer = filmsContainer;
     this._filmsModel = filmsModel;
+    this._filmsModel.addObserver(this.observeFilms.bind(this));
     this._filterModel = filterModel;
+    this._sortType = {
+      sort: this._filterModel.getSortType().sort,
+      filter: this._filterModel.getSortType().filter,
+    };
     this._films = [];
-    this._renderedFilmsCount = FILM_PER_PAGE;
+    this._filmsPerPage = filmsPerPage;
+    this._renderedFilmsCount = null;
     this._sourcedFilms = [];
     this._profile = null;
     this._filmPresenter = {};
@@ -36,34 +41,34 @@ export default class FilmsPresenter {
   init() {
     this._sourcedFilms = this._filmsModel.getFilms();
     this._films = this._filmsModel.getFilms();
+    this._renderedFilmsCount = this._filmsPerPage;
     if (this._filterModel.getSort().history > 0) {
       this._renderProfile();
     }
     this._renderFilmsContainer();
   }
 
-  update(renderedFilms) {
+  observeFilms(films, updatedFilm) {
     this._clearList();
-    if (renderedFilms) {
-      this._renderedFilmsCount = renderedFilms;
-    }
+    this._sourcedFilms = films.slice();
     let updatedFilms = this._sourcedFilms;
-    this._filterModel.setSort({
-      watchlist: this._sourcedFilms.filter((item) => item.isWatchlist).length,
-      history: this._sourcedFilms.filter((item) => item.isViewed).length,
-      favorites: this._sourcedFilms.filter((item) => item.isFavorite).length,
-    });
-    if (this._filterModel.getSort.history > 0) {
+
+    if (this._filterModel.getSort().history > 0) {
       this._renderProfile();
     }
-    if (this._filterModel.getSortType().filter !== `all`) {
-      updatedFilms = this._sourcedFilms.filter((film) => film[this._filterModel.getSortType().filter]);
+
+    if (this._sortType.filter !== `all`) {
+      updatedFilms = this._sourcedFilms.filter((film) => film[this._sortType.filter]);
     }
-    if (this._filterModel.getSortType().sort !== `default`) {
-      updatedFilms.sort(compareValues(this._filterModel.getSortType().sort, `desc`));
+    if (this._sortType.sort !== `default`) {
+      updatedFilms.sort(compareValues(this._sortType.sort, `desc`));
     }
+
+    if (updatedFilm === null) {
+      return this._sourcedFilms;
+    }
+
     this._films = updatedFilms;
-    this._filterPresenter.init();
     this._renderFilms();
   }
 
@@ -75,17 +80,6 @@ export default class FilmsPresenter {
     } else {
       render(siteBody.querySelector(`.header`), this._profile.getElement(), RenderPosition.BEFOREEND);
     }
-  }
-
-
-  _handleFilterItemClick() {
-    this._filterPresenter.init();
-    this.update();
-  }
-
-  _handleSortItemClick() {
-    this._filterPresenter.init();
-    this.update();
   }
 
   _renderFilmsContainer() {
@@ -112,36 +106,26 @@ export default class FilmsPresenter {
   }
 
   _handleLoadMoreButtonClick() {
-    this._renderFilmList(this._renderedFilmsCount, this._renderedFilmsCount + FILM_PER_PAGE);
-    this._renderedFilmsCount += FILM_PER_PAGE;
+    this._renderFilmList(this._renderedFilmsCount, this._renderedFilmsCount + this._filmsPerPage);
+    this._renderedFilmsCount += this._filmsPerPage;
 
     if (this._renderedFilmsCount >= this._films.length) {
       this._loadMore.getElement().remove();
       this._loadMore.removeElement();
-      this._renderedFilmsCount = FILM_PER_PAGE;
+      this._renderedFilmsCount = this._filmsPerPage;
     }
   }
 
   _renderFilms() {
     this._renderFilmList(0, Math.min(this._films.length, this._renderedFilmsCount));
 
-    if (this._films.length > FILM_PER_PAGE) {
+    if (this._films.length > this._filmsPerPage) {
       this._renderLoadMore();
     }
   }
 
   _handleFilmChange(updatedFilm) {
     this._filmsModel.updateFilm(updatedFilm);
-    this._sourcedFilms = this._filmsModel.getFilms();
-    this._renderProfile();
-    this._filterPresenter.init();
-    if (!updatedFilm[this._filterModel.getSortType().filter]) {
-      this.update(this._renderedFilmsCount);
-    } else {
-      this._filmPresenter[updatedFilm.id].forEach((item) => {
-        item.init(updatedFilm);
-      });
-    }
   }
 
   _handlePopupDisplay(film) {
@@ -150,28 +134,16 @@ export default class FilmsPresenter {
 
   _handlePopupRemoveComment(updatedFilm) {
     this._filmsModel.updateFilm(updatedFilm);
-    this._sourcedFilms = this._filmsModel.getFilms();
-    this._filmPresenter[updatedFilm.id].init(updatedFilm);
     this._popup.init(updatedFilm);
   }
 
   _handlePopupChange(updatedFilm) {
     this._filmsModel.updateFilm(updatedFilm);
-    this._sourcedFilms = this._filmsModel.getFilms();
-    if (!updatedFilm[this._filterModel.getSortType().filter]) {
-      this.update();
-    } else {
-      this._filmPresenter[updatedFilm.id].init(updatedFilm);
-    }
-    this._renderProfile();
-    this._filterPresenter.init();
     this._popup.init(updatedFilm);
   }
 
   _handleAddComment(updatedFilm) {
     this._filmsModel.updateFilm(updatedFilm);
-    this._sourcedFilms = this._filmsModel.getFilms();
-    this._filmPresenter[updatedFilm.id].init(updatedFilm);
     this._popup.init(updatedFilm);
   }
 
@@ -180,7 +152,7 @@ export default class FilmsPresenter {
       .values(this._filmPresenter)
       .forEach((presenter) => presenter.destroy());
     this._filmPresenter = {};
-    this._renderedFilmsCount = FILM_PER_PAGE;
+    this._filterPresenter = {};
     remove(this._loadMore);
   }
 }

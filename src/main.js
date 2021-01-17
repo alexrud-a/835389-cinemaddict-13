@@ -23,6 +23,12 @@ const sort = {
   favorites: films.filter((item) => item.isFavorite).length,
 };
 
+const FilmsPerSection = {
+  MAIN: 5,
+  COMMENTED: 2,
+  RATED: 2,
+};
+
 const siteBody = document.querySelector(`body`);
 const siteMainElement = siteBody.querySelector(`.main`);
 const siteFooterStatistics = siteBody.querySelector(`.footer__statistics`);
@@ -33,14 +39,15 @@ const filterModel = new Filter();
 filterModel.setSortType(sortType.sort, sortType.filter);
 filterModel.setSort(sort);
 
-const filterPresenter = new FilterPresenter(siteMainElement, filterModel);
-const filmsPresenter = new FilmsPresenter(siteMainElement, filmsModel, filterModel, filterPresenter);
+const filterPresenter = new FilterPresenter(siteMainElement, filterModel, filmsModel);
+const filmsPresenter = new FilmsPresenter(siteMainElement, filmsModel, filterModel, filterPresenter, FilmsPerSection.MAIN);
 const emptyPresenter = new EmptyPresenter(siteMainElement);
 
 if (films.length > 0) {
   filmsPresenter.init();
-  const ratedFilmsPresenter = new RatedFilmsPresenter(siteMainElement, filmsModel);
-  const commentedFilmsPresenter = new CommentedFilmsPresenter(siteMainElement, filmsModel);
+  const filmsExtraContainer = siteMainElement.querySelector(`.films`);
+  const ratedFilmsPresenter = new RatedFilmsPresenter(filmsExtraContainer, filmsModel, filterModel, filterPresenter, FilmsPerSection.RATED);
+  const commentedFilmsPresenter = new CommentedFilmsPresenter(filmsExtraContainer, filmsModel, filterModel, filterPresenter, FilmsPerSection.COMMENTED);
   ratedFilmsPresenter.init();
   commentedFilmsPresenter.init();
 } else {
