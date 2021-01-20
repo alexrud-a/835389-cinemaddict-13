@@ -103,14 +103,6 @@ const generateDescription = () => {
   return sentences.slice(getRandomInteger(1, sentences.length - 1)).join(` `);
 };
 
-const generateTime = () => {
-
-  const randomHour = getRandomInteger(0, 3);
-  const randomMinutes = getRandomInteger(0, 59);
-
-  return randomHour + `h ` + randomMinutes + `m`;
-};
-
 const generateRandomComments = () => {
   const COMMENT_COUNT = getRandomInteger(0, 4);
   const randomComments = new Array(COMMENT_COUNT).fill(null).map((_, index) => generateComments(index));
@@ -122,7 +114,7 @@ export const generateFilm = () => {
     id: nanoid(),
     info: generateInfo(),
     description: generateDescription(),
-    time: generateTime(),
+    time: getRandomInteger(30, 180),
     date: new Date(getRandomInteger(0, new Date())),
     genre: choise(genres, getRandomInteger(1, genres.length - 1)),
     comments: generateRandomComments(),
