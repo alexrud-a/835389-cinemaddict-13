@@ -8,21 +8,28 @@ export default class RatedFilmsPresenter {
   constructor(filmsContainer, filmsModel, filterModel, filterPresenter, filmsPerPage) {
     this._filterPresenter = filterPresenter;
     this._filmsContainer = filmsContainer;
+
     this._filmsModel = filmsModel;
     this._filmsModel.addObserver(this.observeFilms.bind(this));
     this._filterModel = filterModel;
+    this._filterModel.addObserver(() => this.observeFilms(this._sourcedFilms, null));
+
+    this._filterPresenter = filterPresenter;
+    this._filmPresenter = {};
+
+    this._sourcedFilms = [];
     this._films = [];
     this._filmsPerPage = filmsPerPage;
-    this._renderedFilmsCount = null;
-    this._sourcedFilms = [];
-    this._filmPresenter = {};
+    this._renderedFilmsCount = filmsPerPage;
     this._filmList = new FilmListRated();
     this._mainFilmList = null;
+
     this._handleFilmChange = this._handleFilmChange.bind(this);
     this._handlePopupDisplay = this._handlePopupDisplay.bind(this);
     this._handlePopupChange = this._handlePopupChange.bind(this);
     this._handleAddComment = this._handleAddComment.bind(this);
     this._handlePopupRemoveComment = this._handlePopupRemoveComment.bind(this);
+
     this._popup = new FilmPopupPresenter(siteBody, this._handlePopupChange, this._handlePopupRemoveComment, this._handleAddComment);
   }
 
@@ -33,14 +40,10 @@ export default class RatedFilmsPresenter {
     this._renderFilmsContainer();
   }
 
-  observeFilms(films, updatedFilm) {
+  observeFilms(films) {
     this._clearList();
-    this._sourcedFilms = films.slice().sort(compareValues(`rating`, `desc`));
+    this._sourcedFilms = films.slice();
     let updatedFilms = this._sourcedFilms;
-
-    if (updatedFilm === null) {
-      return this._sourcedFilms;
-    }
 
     this._films = updatedFilms.slice().sort(compareValues(`rating`, `desc`));
     this._renderFilms();
