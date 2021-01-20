@@ -1,10 +1,11 @@
 import Profile from "../view/profile";
 import FilmList from "../view/films-list";
 import Loadmore from "../view/loadmore";
-import {render, RenderPosition, compareValues, remove, replace} from "../utils";
+import {render, RenderPosition, compareValues, remove, replace, profileRating} from "../utils";
 
 import FilmCardPresenter from "./filmCard";
 import FilmPopupPresenter from "./filmPopup";
+import Stats from "../view/stats";
 
 const siteBody = document.querySelector(`body`);
 
@@ -33,6 +34,7 @@ export default class FilmsPresenter {
     this._profile = null;
     this._filmList = new FilmList();
     this._loadMore = new Loadmore();
+    this._stats = null;
     this._mainFilmList = this._filmList.getElement().querySelector(`.js-film-list-main`);
     this._loadMoreContainer = this._filmList.getElement().querySelector(`.js-films-container`);
 
@@ -42,6 +44,7 @@ export default class FilmsPresenter {
     this._handlePopupChange = this._handlePopupChange.bind(this);
     this._handleAddComment = this._handleAddComment.bind(this);
     this._handlePopupRemoveComment = this._handlePopupRemoveComment.bind(this);
+    this._handleStatsDisplay = this._handleStatsDisplay.bind(this);
 
     this._popup = new FilmPopupPresenter(siteBody, this._handlePopupChange, this._handlePopupRemoveComment, this._handleAddComment);
   }
@@ -50,6 +53,7 @@ export default class FilmsPresenter {
     this._sourcedFilms = this._filmsModel.getFilms().slice();
     this._films = this._sourcedFilms.slice();
     this._renderedFilmsCount = this._filmsPerPage;
+    this._stats = new Stats(this._sourcedFilms, `ALL_TIME`, profileRating(this._filterModel.getSort().history));
     this._renderFilmsContainer();
   }
 
@@ -70,6 +74,12 @@ export default class FilmsPresenter {
           updatedFilms.sort(compareValues(sort, `desc`));
         }
       }
+    }
+
+    if (this._sortType.stats === true) {
+      this._hide();
+    } else {
+      this._show();
     }
 
     this._films = updatedFilms;
@@ -99,6 +109,8 @@ export default class FilmsPresenter {
       this._renderProfile();
     }
     this._renderFilms();
+    render(this._filmsContainer, this._stats.getElement(), RenderPosition.BEFOREEND);
+    this._stats.hide();
   }
 
   _renderCard(film, container) {
@@ -155,6 +167,12 @@ export default class FilmsPresenter {
     this._popup.init(updatedFilm);
   }
 
+  _handleStatsDisplay() {
+    this._stats.show();
+    this._filmList.hide();
+    this._filterPresenter.hideSort();
+  }
+
   _handlePopupChange(updatedFilm) {
     this._filmsModel.updateFilm(updatedFilm);
     this._popup.init(updatedFilm);
@@ -177,5 +195,15 @@ export default class FilmsPresenter {
     this._filmPresenter = {};
     this._filterPresenter = {};
     remove(this._loadMore);
+  }
+
+  _hide() {
+    this._stats.show();
+    this._filmList.hide();
+  }
+
+  _show() {
+    this._stats.hide();
+    this._filmList.show();
   }
 }

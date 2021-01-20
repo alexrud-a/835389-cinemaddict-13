@@ -7,8 +7,6 @@ import EmptyPresenter from "./presenter/empty";
 import FooterPresenter from "./presenter/footer";
 import Films from "./model/films";
 import Filter from "./model/filter";
-import Stats from "./view/stats";
-import {render, RenderPosition} from "./utils";
 
 const FILM_COUNT = 20;
 
@@ -17,6 +15,7 @@ const films = new Array(FILM_COUNT).fill().map(generateFilm);
 const sortType = {
   sort: `default`,
   filter: `all`,
+  stats: false,
 };
 
 const sort = {
@@ -38,7 +37,7 @@ const siteFooterStatistics = siteBody.querySelector(`.footer__statistics`);
 const filmsModel = new Films();
 filmsModel.setFilms(films);
 const filterModel = new Filter();
-filterModel.setSortType(sortType.sort, sortType.filter);
+filterModel.setSortType(sortType.sort, sortType.filter, sortType.stats);
 filterModel.setSort(sort);
 
 const filterPresenter = new FilterPresenter(siteMainElement, filterModel, filmsModel);
@@ -55,8 +54,6 @@ if (films.length > 0) {
 } else {
   emptyPresenter.init();
 }
-
-render(siteMainElement, new Stats(films, `ALL_TIME`, `Sci-Fighter`).getElement(), RenderPosition.BEFOREEND);
 
 const footerPresenter = new FooterPresenter(siteFooterStatistics);
 footerPresenter.init(FILM_COUNT);

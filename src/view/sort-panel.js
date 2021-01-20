@@ -1,4 +1,4 @@
-import AbstractView from "./abstract";
+import Smart from "./smart";
 
 const createSortPanelTemplate = (sortType) => {
   const defaultClassName = (sortType === `default`)
@@ -20,7 +20,7 @@ const createSortPanelTemplate = (sortType) => {
   </ul>`;
 };
 
-export default class SortPanel extends AbstractView {
+export default class SortPanel extends Smart {
   constructor(sortType) {
     super();
     this._sortType = sortType;

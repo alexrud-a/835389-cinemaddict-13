@@ -7,10 +7,11 @@ export default class Filter extends Observer {
     this._sortType = {};
   }
 
-  setSortType(sort, filter) {
+  setSortType(sort, filter, stats) {
     this._sortType = {
       sort,
-      filter
+      filter,
+      stats
     };
     this._notifyChanges();
   }

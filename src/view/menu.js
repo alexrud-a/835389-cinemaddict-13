@@ -35,6 +35,7 @@ export default class SiteMenu extends AbstractView {
     super();
     this._sortInfo = sortInfo;
     this._sortType = sortType;
+    this._clickStatsHandler = this._clickStatsHandler.bind(this);
   }
 
   getTemplate() {
@@ -50,6 +51,16 @@ export default class SiteMenu extends AbstractView {
     for (let btn of this.getElement().querySelectorAll(`.main-navigation__item`)) {
       btn.addEventListener(`click`, this._clickHandler);
     }
+  }
+
+  _clickStatsHandler(evt) {
+    evt.preventDefault();
+    this._callback.statsClick(evt);
+  }
+
+  setClickStatsHandler(callback) {
+    this._callback.statsClick = callback;
+    this.getElement().querySelector(`.main-navigation__additional`).addEventListener(`click`, this._clickStatsHandler);
   }
 }
 

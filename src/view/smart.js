@@ -26,4 +26,12 @@ export default class Smart extends Abstract {
   restoreHandlers() {
     throw new Error(`${Smart.name} method not implemented: resetHandlers`);
   }
+
+  show() {
+    this.getElement().classList.remove(`visually-hidden`);
+  }
+
+  hide() {
+    this.getElement().classList.add(`visually-hidden`);
+  }
 }

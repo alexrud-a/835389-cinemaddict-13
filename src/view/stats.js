@@ -1,4 +1,4 @@
-import SmartView from "./smart.js";
+import Smart from "./smart.js";
 import dayjs from "dayjs";
 import {StatPeriodMap} from "../utils";
 import Chart from "chart.js";
@@ -169,7 +169,7 @@ const createStatsTemplate = (localData) => {
   `;
 };
 
-export default class Stats extends SmartView {
+export default class Stats extends Smart {
   constructor(films, currentPeriod, userTitle) {
     super();
     this._films = films;
