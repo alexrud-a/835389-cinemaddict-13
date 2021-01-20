@@ -59,14 +59,13 @@ export default class FilmsPresenter {
     this._clearList();
     let updatedFilms = this._sourcedFilms;
 
-    if (this._sortType.filter !== `all`) {
-      updatedFilms = films.filter((film) => film[this._sortType.filter]);
+    if (this._sortType.filter !== `all` || this._sortType.sort !== `default`) {
       const {filter, sort} = this._filterModel.getSortType();
       if (filter !== `all`) {
         updatedFilms = films.filter((film) => film[filter]);
       }
-      if (this._sortType.sort !== `default`) {
-        updatedFilms.sort(compareValues(this._sortType.sort, `desc`));
+      if (sort !== `default`) {
+        updatedFilms.sort(compareValues(sort, `desc`));
         if (sort !== `default`) {
           updatedFilms.sort(compareValues(sort, `desc`));
         }
