@@ -12,7 +12,7 @@ export default class Filter extends Observer {
       sort,
       filter
     };
-    this._notify({sortType: this._sortType, sort: this._sort});
+    this._notifyChanges();
   }
 
   getSortType() {
@@ -21,11 +21,16 @@ export default class Filter extends Observer {
 
   setSort(sort) {
     this._sort = sort;
-    this._notify({sortType: this._sortType, sort: this._sort});
+    this._notifyChanges();
   }
 
   getSort() {
     return this._sort;
+  }
+
+  _notifyChanges() {
+    this._notify({sortType: this._sortType, sort: this._sort});
+    this._notify({sortType: this._sortType, sort: this._sort});
   }
 
 }

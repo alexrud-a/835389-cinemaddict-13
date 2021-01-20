@@ -33,8 +33,6 @@ const createMenuTemplate = (sortInfo, sortType) => {
 export default class SiteMenu extends AbstractView {
   constructor(sortInfo, sortType) {
     super();
-    this._element = null;
-    this._clickHandler = this._clickHandler.bind(this);
     this._sortInfo = sortInfo;
     this._sortType = sortType;
   }
@@ -43,9 +41,9 @@ export default class SiteMenu extends AbstractView {
     return createMenuTemplate(this._sortInfo, this._sortType);
   }
 
-  // getActiveMenuLink() {
-  //   return super.getElement().querySelector(`.main-navigation__item--active`);
-  // }
+  getActiveMenuLink() {
+    return super.getElement().querySelector(`.main-navigation__item--active`);
+  }
 
   setClickHandler(callback) {
     this._callback.click = callback;

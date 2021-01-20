@@ -8,7 +8,7 @@ import FooterPresenter from "./presenter/footer";
 import Films from "./model/films";
 import Filter from "./model/filter";
 
-const FILM_COUNT = 22;
+const FILM_COUNT = 20;
 
 const films = new Array(FILM_COUNT).fill().map(generateFilm);
 

@@ -26,7 +26,6 @@ const createProfileTemplate = (count) => {
 export default class Profile extends AbstractView {
   constructor(count) {
     super();
-    this._element = null;
     this._count = count;
   }
 

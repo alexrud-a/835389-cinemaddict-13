@@ -104,8 +104,6 @@ const createTemplatePopupFilm = (film) => {
 export default class Popup extends Smart {
   constructor(film) {
     super();
-    this._element = null;
-    this._clickHandler = this._clickHandler.bind(this);
     this._editClickHandler = this._editClickHandler.bind(this);
     this._film = film;
     this._data = Popup.parseFilmToData(film);

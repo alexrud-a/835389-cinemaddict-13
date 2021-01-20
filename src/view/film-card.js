@@ -49,8 +49,6 @@ const createCardFilmTemplate = (film) => {
 export default class CardFilm extends Base {
   constructor(film) {
     super();
-    this._element = null;
-    this._clickHandler = this._clickHandler.bind(this);
     this._editClickHandler = this._editClickHandler.bind(this);
     this._film = film;
   }
