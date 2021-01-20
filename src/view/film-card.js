@@ -27,6 +27,7 @@ const createCardFilmTemplate = (film) => {
     }
     return slicedDescription;
   };
+
   return `<article class="film-card" id="${id}">
           <h3 class="js-open-popup film-card__title">${info.title}</h3>
           <p class="film-card__rating">${rating}</p>

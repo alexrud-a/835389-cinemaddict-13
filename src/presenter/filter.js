@@ -7,7 +7,6 @@ export default class FilterPresenter {
     this._filterContainer = filterContainer;
     this._filterModel = filterModel;
     this._filmsModel = filmsModel;
-    //this._filterModel.addObserver(this.observeFilter.bind(this));
     this._filmsModel.addObserver(this.observeFilter.bind(this));
     this._menu = null;
     this._sortPanel = null;
