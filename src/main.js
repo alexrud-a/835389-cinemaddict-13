@@ -7,6 +7,8 @@ import EmptyPresenter from "./presenter/empty";
 import FooterPresenter from "./presenter/footer";
 import Films from "./model/films";
 import Filter from "./model/filter";
+import Stats from "./view/stats";
+import {render, RenderPosition} from "./utils";
 
 const FILM_COUNT = 20;
 
@@ -53,6 +55,8 @@ if (films.length > 0) {
 } else {
   emptyPresenter.init();
 }
+
+render(siteMainElement, new Stats(films, `ALL_TIME`, `Sci-Fighter`).getElement(), RenderPosition.BEFOREEND);
 
 const footerPresenter = new FooterPresenter(siteFooterStatistics);
 footerPresenter.init(FILM_COUNT);
