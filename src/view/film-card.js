@@ -19,7 +19,7 @@ const createCardFilmTemplate = (film) => {
     : ``;
 
   const formatDuration = () => {
-    let hours = Math.trunc(time/60);
+    let hours = Math.trunc(time / 60);
     let minutes = time % 60;
     return hours + `h ` + minutes + ` m`;
   };

@@ -9,18 +9,21 @@ const createTemplatePopupFilm = (film) => {
   const {info, time, date, rating, age, isFavorite, isViewed, isWatchlist, description, regisseur, screenwriters, actors, country, genre} = film;
   const fullDate = dayjs(date).format(`DD MMMM YYYY`);
   const formatDuration = () => {
-    let hours = Math.trunc(time/60);
+    let hours = Math.trunc(time / 60);
     let minutes = time % 60;
     return hours + `h ` + minutes + ` m`;
   };
   const watchlistCheck = isWatchlist
-    ? `checked` : ``;
+    ? `checked`
+    : ``;
 
   const watchedCheck = isViewed
-    ? `checked` : ``;
+    ? `checked`
+    : ``;
 
   const favoriteCheck = isFavorite
-    ? `checked` : ``;
+    ? `checked`
+    : ``;
   return `<section class="film-details">
   <form class="film-details__inner" action="" method="get">
     <div class="film-details__top-container">
