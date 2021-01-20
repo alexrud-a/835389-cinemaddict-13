@@ -14,16 +14,13 @@ const createTemplatePopupFilm = (film) => {
     return hours + `h ` + minutes + ` m`;
   };
   const watchlistCheck = isWatchlist
-    ? `checked`
-    : ``;
+    ? `checked` : ``;
 
   const watchedCheck = isViewed
-    ? `checked`
-    : ``;
+    ? `checked` : ``;
 
   const favoriteCheck = isFavorite
-    ? `checked`
-    : ``;
+    ? `checked` : ``;
   return `<section class="film-details">
   <form class="film-details__inner" action="" method="get">
     <div class="film-details__top-container">
