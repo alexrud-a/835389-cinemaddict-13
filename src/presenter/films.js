@@ -11,17 +11,12 @@ const siteBody = document.querySelector(`body`);
 
 export default class FilmsPresenter {
   constructor(filmsContainer, filmsModel, filterModel, filterPresenter, filmsPerPage) {
-    this._filterPresenter = filterPresenter;
     this._filmsContainer = filmsContainer;
 
     this._filmsModel = filmsModel;
     this._filmsModel.addObserver(this.observeFilms.bind(this));
     this._filterModel = filterModel;
-    this._sortType = {
-      sort: this._filterModel.getSortType().sort,
-      filter: this._filterModel.getSortType().filter,
-    };
-    this._filterModel.addObserver(() => this.observeFilms(this._sourcedFilms, null));
+    this._filterModel.addObserver(() => this.observeFilms(this._filmsModel.getFilms(), null));
     this._filterModel.addObserver(this.observeProfileHistory.bind(this));
 
     this._filterPresenter = filterPresenter;
@@ -58,12 +53,11 @@ export default class FilmsPresenter {
   }
 
   observeFilms(films) {
-    this._sortType = this._filterModel.getSortType();
     this._sourcedFilms = films.slice();
     this._clearList();
     let updatedFilms = this._sourcedFilms;
 
-    if (this._sortType.filter !== `all` || this._sortType.sort !== `default`) {
+    if (this._filterModel.getSortType().filter !== `all` || this._filterModel.getSortType().sort !== `default`) {
       const {filter, sort} = this._filterModel.getSortType();
       if (filter !== `all`) {
         updatedFilms = films.filter((film) => film[filter]);
@@ -76,7 +70,7 @@ export default class FilmsPresenter {
       }
     }
 
-    if (this._sortType.stats === true) {
+    if (this._filterModel.getSortType().stats === true) {
       this._hide();
     } else {
       this._show();
@@ -151,11 +145,11 @@ export default class FilmsPresenter {
 
   _handleFilmChange(updatedFilm) {
     this._filmsModel.updateFilm(updatedFilm);
-    this._filterModel.setSort({
-      watchlist: this._filmsModel.getFilms().slice().filter((item) => item.isWatchlist).length,
-      history: this._filmsModel.getFilms().slice().filter((item) => item.isViewed).length,
-      favorites: this._filmsModel.getFilms().slice().filter((item) => item.isFavorite).length,
-    });
+    // this._filterModel.setSort({
+    //   watchlist: this._filmsModel.getFilms().slice().filter((item) => item.isWatchlist).length,
+    //   history: this._filmsModel.getFilms().slice().filter((item) => item.isViewed).length,
+    //   favorites: this._filmsModel.getFilms().slice().filter((item) => item.isFavorite).length,
+    // });
   }
 
   _handlePopupDisplay(film) {
@@ -170,7 +164,6 @@ export default class FilmsPresenter {
   _handleStatsDisplay() {
     this._stats.show();
     this._filmList.hide();
-    this._filterPresenter.hideSort();
   }
 
   _handlePopupChange(updatedFilm) {

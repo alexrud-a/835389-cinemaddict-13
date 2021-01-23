@@ -7,7 +7,7 @@ export default class FilterPresenter {
     this._filterContainer = filterContainer;
     this._filterModel = filterModel;
     this._filmsModel = filmsModel;
-    this._filmsModel.addObserver(this.observeFilter.bind(this));
+    this._filmsModel.addObserver(this.observeFilms.bind(this));
     this._menu = null;
     this._sortPanel = null;
     this._handleSortItemClick = this._handleSortItemClick.bind(this);
@@ -20,7 +20,12 @@ export default class FilterPresenter {
     this._renderSort();
   }
 
-  observeFilter() {
+  observeFilms(films) {
+    this._filterModel.setSort({
+      watchlist: films.slice().filter((item) => item.isWatchlist).length,
+      history: films.slice().filter((item) => item.isViewed).length,
+      favorites: films.slice().filter((item) => item.isFavorite).length,
+    });
     this.init();
   }
 

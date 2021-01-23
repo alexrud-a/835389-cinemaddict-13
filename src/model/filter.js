@@ -31,7 +31,6 @@ export default class Filter extends Observer {
 
   _notifyChanges() {
     this._notify({sortType: this._sortType, sort: this._sort});
-    this._notify({sortType: this._sortType, sort: this._sort});
   }
 
 }

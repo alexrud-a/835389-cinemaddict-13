@@ -1,5 +1,6 @@
 import dayjs from "dayjs";
 import Smart from "./smart";
+import {formatDuration} from "../utils";
 
 const createGenresTemplate = (genre) => {
   return genre.map((item) => `<span class="film-details__genre">${item}</span>`).join(``);
@@ -8,11 +9,6 @@ const createGenresTemplate = (genre) => {
 const createTemplatePopupFilm = (film) => {
   const {info, time, date, rating, age, isFavorite, isViewed, isWatchlist, description, regisseur, screenwriters, actors, country, genre} = film;
   const fullDate = dayjs(date).format(`DD MMMM YYYY`);
-  const formatDuration = () => {
-    let hours = Math.trunc(time / 60);
-    let minutes = time % 60;
-    return hours + `h ` + minutes + ` m`;
-  };
   const watchlistCheck = isWatchlist
     ? `checked`
     : ``;
@@ -68,7 +64,7 @@ const createTemplatePopupFilm = (film) => {
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Runtime</td>
-              <td class="film-details__cell">${formatDuration()}</td>
+              <td class="film-details__cell">${formatDuration(time)}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Country</td>

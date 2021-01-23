@@ -6,6 +6,12 @@ const UserRank = {
   MOVIE_BAFF: `Movie Buff`
 };
 
+export const formatDuration = (time) => {
+  let hours = Math.trunc(time / 60);
+  let minutes = time % 60;
+  return hours + `h ` + minutes + ` m`;
+};
+
 export const profileRating = (count) => {
   if (count > 1 && count <= 10) {
     return UserRank.NOVICE;
