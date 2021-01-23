@@ -34,8 +34,8 @@ export default class RatedFilmsPresenter {
   }
 
   init() {
-    this._sourcedFilms = this._filmsModel.getFilms().sort(compareValues(`rating`, `desc`));
-    this._films = this._sourcedFilms.slice();
+    this._sourcedFilms = this._filmsModel.getFilms();
+    this._films = this._sourcedFilms.slice().sort(compareValues(`rating`, `desc`));
     this._renderedFilmsCount = this._filmsPerPage;
     this._renderFilmsContainer();
   }
