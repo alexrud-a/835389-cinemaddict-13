@@ -49,8 +49,8 @@ if (filmsModel.getFilms().length > 0) {
   const filmsExtraContainer = siteMainElement.querySelector(`.films`);
   //const ratedFilmsPresenter = new RatedFilmsPresenter(filmsExtraContainer, filmsModel, filterModel, filterPresenter, FilmsPerSection.RATED);
   //const commentedFilmsPresenter = new CommentedFilmsPresenter(filmsExtraContainer, filmsModel, filterModel, filterPresenter, FilmsPerSection.COMMENTED);
-  //ratedFilmsPresenter.init();
-  //commentedFilmsPresenter.init();
+  // ratedFilmsPresenter.init();
+  // commentedFilmsPresenter.init();
 } else {
   emptyPresenter.init();
 }

@@ -145,11 +145,6 @@ export default class FilmsPresenter {
 
   _handleFilmChange(updatedFilm) {
     this._filmsModel.updateFilm(updatedFilm);
-    // this._filterModel.setSort({
-    //   watchlist: this._filmsModel.getFilms().slice().filter((item) => item.isWatchlist).length,
-    //   history: this._filmsModel.getFilms().slice().filter((item) => item.isViewed).length,
-    //   favorites: this._filmsModel.getFilms().slice().filter((item) => item.isFavorite).length,
-    // });
   }
 
   _handlePopupDisplay(film) {
@@ -169,11 +164,6 @@ export default class FilmsPresenter {
   _handlePopupChange(updatedFilm) {
     this._filmsModel.updateFilm(updatedFilm);
     this._popup.init(updatedFilm);
-    this._filterModel.setSort({
-      watchlist: this._filmsModel.getFilms().slice().filter((item) => item.isWatchlist).length,
-      history: this._filmsModel.getFilms().slice().filter((item) => item.isViewed).length,
-      favorites: this._filmsModel.getFilms().slice().filter((item) => item.isFavorite).length,
-    });
   }
 
   _handleAddComment(updatedFilm) {
