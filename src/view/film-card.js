@@ -24,6 +24,12 @@ const createCardFilmTemplate = (film) => {
     ? `film-card__controls-item--active`
     : ``;
 
+  const formatDuration = () => {
+    let hours = Math.trunc(time / 60);
+    let minutes = time % 60;
+    return hours + `h ` + minutes + ` m`;
+  };
+
   const sliceDescription = () => {
     let slicedDescription;
     if (description.length > 140) {

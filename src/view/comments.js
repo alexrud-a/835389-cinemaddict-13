@@ -1,9 +1,12 @@
 import dayjs from "dayjs";
+import relativeTime from 'dayjs/plugin/relativeTime';
+dayjs.extend(relativeTime);
 import Smart from "./smart";
 import {createElement, render, RenderPosition} from "../utils";
 
 const createCommentTemplate = (comment) => {
   const {info: {emotion, text, author}, date, id} = comment;
+
   return `<li class="film-details__comment" id="${id}">
             <span class="film-details__comment-emoji">
               <img src="./images/emoji/${emoji(emotion)}" width="55" height="55" alt="emoji-${emotion}">
@@ -12,7 +15,7 @@ const createCommentTemplate = (comment) => {
               <p class="film-details__comment-text">${text}</p>
               <p class="film-details__comment-info">
                 <span class="film-details__comment-author">${author}</span>
-                <span class="film-details__comment-day">${dayjs(date).format(`YYYY/MM/DD HH:mm`)}</span>
+                <span class="film-details__comment-day">${dayjs().to(dayjs(date))}</span>
                 <button class="film-details__comment-delete">Delete</button>
               </p>
             </div>
