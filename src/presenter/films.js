@@ -113,7 +113,6 @@ export default class FilmsPresenter {
   }
 
   _renderFilmsContainer() {
-    //this._filterPresenter.init();
     let prevList = this._filmList;
     this._filmList = new FilmList();
 
