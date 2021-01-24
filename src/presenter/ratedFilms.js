@@ -2,19 +2,21 @@ import FilmListRated from "../view/films-list-rated";
 import {compareValues, render, RenderPosition} from "../utils";
 import FilmCardPresenter from "./filmCard";
 import FilmPopupPresenter from "./filmPopup";
+import CommentsModel from "../model/comments";
 const siteBody = document.querySelector(`body`);
 
 export default class RatedFilmsPresenter {
-  constructor(filmsContainer, filmsModel, filterModel, filterPresenter, filmsPerPage) {
-    this._filterPresenter = filterPresenter;
+  constructor(filmsContainer, filmsModel, filterModel, filmsPerPage, api) {
     this._filmsContainer = filmsContainer;
+    this._isLoading = true;
 
     this._filmsModel = filmsModel;
     this._filmsModel.addObserver(this.observeFilms.bind(this));
     this._filterModel = filterModel;
     this._filterModel.addObserver(() => this.observeFilms(this._sourcedFilms, null));
+    this._commentsModel = new CommentsModel();
+    this._api = api;
 
-    this._filterPresenter = filterPresenter;
     this._filmPresenter = {};
 
     this._sourcedFilms = [];
@@ -30,7 +32,7 @@ export default class RatedFilmsPresenter {
     this._handleAddComment = this._handleAddComment.bind(this);
     this._handlePopupRemoveComment = this._handlePopupRemoveComment.bind(this);
 
-    this._popup = new FilmPopupPresenter(siteBody, this._handlePopupChange, this._handlePopupRemoveComment, this._handleAddComment);
+    this._popup = new FilmPopupPresenter(siteBody, this._handlePopupChange, this._handlePopupRemoveComment, this._handleAddComment, this._commentsModel);
   }
 
   init() {
@@ -41,6 +43,9 @@ export default class RatedFilmsPresenter {
   }
 
   observeFilms(films) {
+    if (this._isLoading) {
+      this.init();
+    }
     this._clearList();
     this._sourcedFilms = films.slice();
     let updatedFilms = this._sourcedFilms;
@@ -50,7 +55,6 @@ export default class RatedFilmsPresenter {
   }
 
   _renderFilmsContainer() {
-    this._filterPresenter.init();
     render(this._filmsContainer, this._filmList.getElement(), RenderPosition.BEFOREEND);
     this._mainFilmList = this._filmList.getElement().querySelector(`.js-film-list-rated`);
     this._renderFilms();
@@ -77,7 +81,13 @@ export default class RatedFilmsPresenter {
   }
 
   _handlePopupDisplay(film) {
-    this._popup.init(film);
+    this._api.getComments(film).then((comments) => {
+      this._commentsModel.setCommentsFilm(comments, film);
+    })
+      .catch(() => {
+        this._commentsModel.setCommentsFilm([], {});
+      });
+    this._popup.init(film, this._commentsModel.getCommentsFilm());
   }
 
   _handlePopupRemoveComment(updatedFilm) {

@@ -48,7 +48,6 @@ export default class FilmsPresenter {
     this._handlePopupRemoveComment = this._handlePopupRemoveComment.bind(this);
     this._handleStatsDisplay = this._handleStatsDisplay.bind(this);
 
-    this._stats = new Stats(this._sourcedFilms, `ALL_TIME`, profileRating(this._filterModel.getSort().history));
     this._popup = new FilmPopupPresenter(siteBody, this._handlePopupChange, this._handlePopupRemoveComment, this._handleAddComment, this._commentsModel);
   }
 
@@ -130,7 +129,14 @@ export default class FilmsPresenter {
       this._renderProfile();
     }
     this._renderFilms();
-    render(this._filmsContainer, this._stats.getElement(), RenderPosition.BEFOREEND);
+    let prevStats = this._stats;
+    this._stats = new Stats(this._sourcedFilms, `ALL_TIME`, profileRating(this._filterModel.getSort().history));
+    if (prevStats) {
+      replace(this._stats, prevStats);
+    } else {
+      render(this._filmsContainer, this._stats.getElement(), RenderPosition.BEFOREEND);
+    }
+
     this._stats.hide();
   }
 
@@ -171,7 +177,9 @@ export default class FilmsPresenter {
   }
 
   _handleFilmChange(updatedFilm) {
-    this._filmsModel.updateFilm(updatedFilm);
+    this._api.updateFilm(updatedFilm).then((update) => {
+      this._filmsModel.updateFilm(update);
+    });
   }
 
   _handlePopupDisplay(film) {
@@ -186,7 +194,7 @@ export default class FilmsPresenter {
 
   _handlePopupRemoveComment(updatedFilm) {
     this._filmsModel.updateFilm(updatedFilm);
-    this._popup.init(updatedFilm);
+    this._popup.init(updatedFilm, this._commentsModel.getCommentsFilm());
   }
 
   _handleStatsDisplay() {
@@ -195,13 +203,15 @@ export default class FilmsPresenter {
   }
 
   _handlePopupChange(updatedFilm) {
-    this._filmsModel.updateFilm(updatedFilm);
-    this._popup.init(updatedFilm);
+    this._api.updateFilm(updatedFilm).then((update) => {
+      this._filmsModel.updateFilm(update);
+      this._popup.init(update, this._commentsModel.getCommentsFilm());
+    });
   }
 
   _handleAddComment(updatedFilm) {
     this._filmsModel.updateFilm(updatedFilm);
-    this._popup.init(updatedFilm);
+    this._popup.init(updatedFilm, this._commentsModel.getCommentsFilm());
   }
 
   _clearList() {

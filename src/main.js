@@ -55,8 +55,8 @@ const filmsPresenter = new FilmsPresenter(siteMainElement, filmsModel, filterMod
 if (filmsModel.getFilms().length > 0) {
   filmsPresenter.init();
   const filmsExtraContainer = siteMainElement.querySelector(`.films`);
-  const ratedFilmsPresenter = new RatedFilmsPresenter(filmsExtraContainer, filmsModel, filterModel, filterPresenter, FilmsPerSection.RATED);
-  const commentedFilmsPresenter = new CommentedFilmsPresenter(filmsExtraContainer, filmsModel, filterModel, filterPresenter, FilmsPerSection.COMMENTED);
+  const ratedFilmsPresenter = new RatedFilmsPresenter(filmsExtraContainer, filmsModel, filterModel, FilmsPerSection.RATED, api);
+  const commentedFilmsPresenter = new CommentedFilmsPresenter(filmsExtraContainer, filmsModel, filterModel, FilmsPerSection.COMMENTED, api);
   ratedFilmsPresenter.init();
   commentedFilmsPresenter.init();
 } else {
