@@ -1,30 +1,28 @@
 import Popup from "../view/popup";
-import {getRandomInteger, remove, render, RenderPosition, replace} from "../utils";
+import Comments from "../view/comments";
+import {remove, render, RenderPosition, replace} from "../utils";
 import {nanoid} from "nanoid";
 import he from "he";
 
 export default class FilmPopupPresenter {
-  constructor(container, changeData, deleteComment, addComment, api) {
+  constructor(container, changeData, deleteComment, addComment, commentsModel) {
     this._container = container;
-    this._film = null;
+    this._film = {};
     this._popup = null;
     this._changeData = changeData;
     this._deleteComment = deleteComment;
     this._addComment = addComment;
     this._commentsList = null;
     this._posScroll = null;
-    this._api = api;
+    this._commentsModel = commentsModel;
+    this._commentsModel.addObserver(this.observeComments.bind(this));
+    this._comments = [];
   }
 
-  init(film) {
+  init(film, comments) {
     this._film = film;
-
-    this._api.getComments(this._film.id).then((comments) => {
-      this._commentsList = comments;
-    })
-      .catch(() => {
-        this._commentsList = [];
-      });
+    this._comments = comments;
+    this._commentsList = new Comments(this._comments);
     const prevPopup = this._popup;
     this._popup = new Popup(this._film);
 
@@ -42,6 +40,10 @@ export default class FilmPopupPresenter {
     }
 
     remove(prevPopup);
+  }
+
+  observeComments(comments, film) {
+    this.init(film, comments);
   }
 
   _renderPopup() {
@@ -132,42 +134,5 @@ export default class FilmPopupPresenter {
       this._film.comments.push(newComment);
       this._addComment(Object.assign({}, this._film, {comments: this._film.comments}), posScroll);
     }
-  }
-
-  static adaptToClient(comment) {
-    const adaptedComment = Object.assign(
-        {},
-        comment,
-        {
-          info: {
-            author: comment.author,
-            text: comment.comment,
-            emotion: comment.emotion,
-          },
-        }
-    );
-
-    delete adaptedComment.author;
-    delete adaptedComment.comment;
-    delete adaptedComment.emotion;
-
-    return adaptedComment;
-  }
-
-  static adaptToServer(comment) {
-    const adaptedComment = Object.assign(
-        {},
-        comment,
-        {
-          "author": comment.info.author,
-          "comment": comment.info.text,
-          "emotion": comment.info.emotion,
-
-        }
-    );
-
-    delete adaptedComment.info;
-
-    return adaptedComment;
   }
 }

@@ -8,6 +8,8 @@ import FilmCardPresenter from "./filmCard";
 import FilmPopupPresenter from "./filmPopup";
 import Stats from "../view/stats";
 
+import CommentsModel from "../model/comments";
+
 const siteBody = document.querySelector(`body`);
 
 export default class FilmsPresenter {
@@ -20,11 +22,11 @@ export default class FilmsPresenter {
     this._filterModel = filterModel;
     this._filterModel.addObserver(() => this.observeFilms(this._filmsModel.getFilms(), null));
     this._filterModel.addObserver(this.observeProfileHistory.bind(this));
+    this._commentsModel = new CommentsModel();
+    this._api = api;
 
-    this._filterPresenter = filterPresenter;
     this._filmPresenter = {};
     this._emptyPresenter = emptyPresenter;
-    this._api = api;
 
     this._sourcedFilms = [];
     this._films = [];
@@ -46,7 +48,8 @@ export default class FilmsPresenter {
     this._handlePopupRemoveComment = this._handlePopupRemoveComment.bind(this);
     this._handleStatsDisplay = this._handleStatsDisplay.bind(this);
 
-    this._popup = new FilmPopupPresenter(siteBody, this._handlePopupChange, this._handlePopupRemoveComment, this._handleAddComment, this._api);
+    this._stats = new Stats(this._sourcedFilms, `ALL_TIME`, profileRating(this._filterModel.getSort().history));
+    this._popup = new FilmPopupPresenter(siteBody, this._handlePopupChange, this._handlePopupRemoveComment, this._handleAddComment, this._commentsModel);
   }
 
   init() {
@@ -55,7 +58,6 @@ export default class FilmsPresenter {
     this._sourcedFilms = this._filmsModel.getFilms().slice();
     this._films = this._sourcedFilms.slice();
     this._renderedFilmsCount = this._filmsPerPage;
-    this._stats = new Stats(this._sourcedFilms, `ALL_TIME`, profileRating(this._filterModel.getSort().history));
     this._renderFilmsContainer();
   }
 
@@ -173,7 +175,13 @@ export default class FilmsPresenter {
   }
 
   _handlePopupDisplay(film) {
-    this._popup.init(film);
+    this._api.getComments(film).then((comments) => {
+      this._commentsModel.setCommentsFilm(comments, film);
+    })
+      .catch(() => {
+        this._commentsModel.setCommentsFilm([], {});
+      });
+    this._popup.init(film, this._commentsModel.getCommentsFilm());
   }
 
   _handlePopupRemoveComment(updatedFilm) {
