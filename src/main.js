@@ -1,4 +1,3 @@
-import {generateFilm} from "./mock/film";
 import FilterPresenter from "./presenter/filter";
 import FilmsPresenter from "./presenter/films";
 import RatedFilmsPresenter from "./presenter/ratedFilms";
@@ -7,21 +6,17 @@ import EmptyPresenter from "./presenter/empty";
 import FooterPresenter from "./presenter/footer";
 import Films from "./model/films";
 import Filter from "./model/filter";
+import Api from "./api.js";
 
-const FILM_COUNT = 20;
+const AUTHORIZATION = `Basic s9KYnCvF66Xu8tUca`;
+const END_POINT = `https://13.ecmascript.pages.academy/cinemaddict`;
 
-const films = new Array(FILM_COUNT).fill().map(generateFilm);
+const api = new Api(END_POINT, AUTHORIZATION);
 
 const sortType = {
   sort: `default`,
   filter: `all`,
   stats: false,
-};
-
-const sort = {
-  watchlist: films.filter((item) => item.isWatchlist).length,
-  history: films.filter((item) => item.isViewed).length,
-  favorites: films.filter((item) => item.isFavorite).length,
 };
 
 const FilmsPerSection = {
@@ -35,14 +30,27 @@ const siteMainElement = siteBody.querySelector(`.main`);
 const siteFooterStatistics = siteBody.querySelector(`.footer__statistics`);
 
 const filmsModel = new Films();
-filmsModel.setFilms(films);
+
+api.getFilms().then((films) => {
+  filmsModel.setFilms(films);
+})
+  .catch(() => {
+    filmsModel.setFilms([]);
+  });
+
+const sort = {
+  watchlist: filmsModel.getFilms().filter((item) => item.isWatchlist).length,
+  history: filmsModel.getFilms().filter((item) => item.isViewed).length,
+  favorites: filmsModel.getFilms().filter((item) => item.isFavorite).length,
+};
+
 const filterModel = new Filter();
 filterModel.setSortType(sortType.sort, sortType.filter, sortType.stats);
 filterModel.setSort(sort);
 
-const filterPresenter = new FilterPresenter(siteMainElement, filterModel, filmsModel);
-const filmsPresenter = new FilmsPresenter(siteMainElement, filmsModel, filterModel, filterPresenter, FilmsPerSection.MAIN);
 const emptyPresenter = new EmptyPresenter(siteMainElement);
+const filterPresenter = new FilterPresenter(siteMainElement, filterModel, filmsModel);
+const filmsPresenter = new FilmsPresenter(siteMainElement, filmsModel, filterModel, filterPresenter, FilmsPerSection.MAIN, emptyPresenter, api);
 
 if (filmsModel.getFilms().length > 0) {
   filmsPresenter.init();
@@ -55,5 +63,5 @@ if (filmsModel.getFilms().length > 0) {
   emptyPresenter.init();
 }
 
-const footerPresenter = new FooterPresenter(siteFooterStatistics);
-footerPresenter.init(FILM_COUNT);
+const footerPresenter = new FooterPresenter(siteFooterStatistics, filmsModel);
+footerPresenter.init(filmsModel.getFilms().length);

@@ -1,11 +1,10 @@
 import Popup from "../view/popup";
-import Comments from "../view/comments";
-import {remove, render, RenderPosition, replace} from "../utils";
+import {getRandomInteger, remove, render, RenderPosition, replace} from "../utils";
 import {nanoid} from "nanoid";
 import he from "he";
 
 export default class FilmPopupPresenter {
-  constructor(container, changeData, deleteComment, addComment) {
+  constructor(container, changeData, deleteComment, addComment, api) {
     this._container = container;
     this._film = null;
     this._popup = null;
@@ -14,14 +13,20 @@ export default class FilmPopupPresenter {
     this._addComment = addComment;
     this._commentsList = null;
     this._posScroll = null;
+    this._api = api;
   }
 
   init(film) {
     this._film = film;
 
+    this._api.getComments(this._film.id).then((comments) => {
+      this._commentsList = comments;
+    })
+      .catch(() => {
+        this._commentsList = [];
+      });
     const prevPopup = this._popup;
     this._popup = new Popup(this._film);
-    this._commentsList = new Comments(this._film.comments);
 
     if (prevPopup && this._container.classList.contains(`hide-overflow`)) {
       replace(this._popup, prevPopup);
@@ -127,5 +132,42 @@ export default class FilmPopupPresenter {
       this._film.comments.push(newComment);
       this._addComment(Object.assign({}, this._film, {comments: this._film.comments}), posScroll);
     }
+  }
+
+  static adaptToClient(comment) {
+    const adaptedComment = Object.assign(
+        {},
+        comment,
+        {
+          info: {
+            author: comment.author,
+            text: comment.comment,
+            emotion: comment.emotion,
+          },
+        }
+    );
+
+    delete adaptedComment.author;
+    delete adaptedComment.comment;
+    delete adaptedComment.emotion;
+
+    return adaptedComment;
+  }
+
+  static adaptToServer(comment) {
+    const adaptedComment = Object.assign(
+        {},
+        comment,
+        {
+          "author": comment.info.author,
+          "comment": comment.info.text,
+          "emotion": comment.info.emotion,
+
+        }
+    );
+
+    delete adaptedComment.info;
+
+    return adaptedComment;
   }
 }
