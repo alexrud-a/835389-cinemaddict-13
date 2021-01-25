@@ -15,19 +15,21 @@ export default class CommentsModel extends Observer {
     return this._commentList;
   }
 
-  updateComment(update) {
-    const index = this._commentList.findIndex((comment) => comment.id === update.id);
+  addComment(comments, film) {
+    this._commentList = comments.slice();
+
+    this._notify(this._commentList, film);
+  }
+
+  removeComment(removed, film) {
+    const index = this._commentList.findIndex((comment) => comment.id === removed.id);
 
     if (index === -1) {
       throw new Error(`Can't update unexisting task`);
     }
 
-    this._commentList = [
-      ...this._commentList.slice(0, index),
-      update,
-      ...this._commentList.slice(index + 1)
-    ];
-    this._notify(this._commentList, update);
+    this._commentList.splice(index, 1);
+    this._notify(this._commentList, film);
   }
 
   static adaptToClient(comment) {

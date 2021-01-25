@@ -84,15 +84,16 @@ export default class FilmPopupPresenter {
   _clickFilmInfo(evt) {
     this._posScroll = this.getPositionScroll();
     let type = evt.target.getAttribute(`data-type`);
-    this._changeData(Object.assign({}, this._film, {[type]: !this._film[type]}), this._posScroll);
+    this._changeData(Object.assign({}, this._film, {[type]: !this._film[type]}));
   }
 
   _removeFilmComment(evt) {
     this._posScroll = this.getPositionScroll();
     let commentId = evt.target.closest(`.film-details__comment`).getAttribute(`id`);
-    let commentInd = this._film.comments.findIndex((item) => item.id === commentId);
-    this._film.comments.splice(commentInd, 1);
-    this._deleteComment(Object.assign({}, this._film, {comments: this._film.comments}), this._posScroll);
+    let commentInd = this._comments.findIndex((item) => item.id === commentId);
+    let filmsCommentInd = this._film.comments.findIndex((item) => item.id === commentId);
+    this._film.comments.splice(filmsCommentInd, 1);
+    this._deleteComment(Object.assign({}, this._film, {comments: this._film.comments}), this._comments[commentInd]);
   }
 
   _addFilmCommentEmotion(evt) {
@@ -112,7 +113,7 @@ export default class FilmPopupPresenter {
   }
 
   submitFormComments() {
-    let posScroll = this.getPositionScroll();
+    this._posScroll = this.getPositionScroll();
     let text = this._popup.getElement().querySelector(`.film-details__comment-input`);
     const emotions = document.querySelectorAll(`.film-details__emoji-item`);
     let currentEmotion;
@@ -123,7 +124,6 @@ export default class FilmPopupPresenter {
     }
     if (currentEmotion !== null && text) {
       let newComment = {
-        id: nanoid(),
         info: {
           text: he.encode(text.value),
           author: ``,
@@ -131,8 +131,7 @@ export default class FilmPopupPresenter {
         },
         date: new Date(),
       };
-      this._film.comments.push(newComment);
-      this._addComment(Object.assign({}, this._film, {comments: this._film.comments}), posScroll);
+      this._addComment(this._film, newComment);
     }
   }
 }
