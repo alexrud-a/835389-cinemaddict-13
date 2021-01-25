@@ -1,6 +1,7 @@
 import {nanoid} from 'nanoid';
 import {generateComments} from "./comments";
 import {getRandomInteger} from "../utils";
+import dayjs from "dayjs";
 
 const generateRating = (a = 0, b = 1) => {
   const lower = Math.ceil(Math.min(a, b));
@@ -103,14 +104,6 @@ const generateDescription = () => {
   return sentences.slice(getRandomInteger(1, sentences.length - 1)).join(` `);
 };
 
-const generateTime = () => {
-
-  const randomHour = getRandomInteger(0, 3);
-  const randomMinutes = getRandomInteger(0, 59);
-
-  return randomHour + `h ` + randomMinutes + `m`;
-};
-
 const generateRandomComments = () => {
   const COMMENT_COUNT = getRandomInteger(0, 4);
   const randomComments = new Array(COMMENT_COUNT).fill(null).map((_, index) => generateComments(index));
@@ -118,16 +111,19 @@ const generateRandomComments = () => {
 };
 
 export const generateFilm = () => {
+  const isViewed = Boolean(getRandomInteger(0, 1));
+  const date = new Date(getRandomInteger(0, new Date()));
+  const watchedData = (isViewed) ? dayjs().add(getRandomInteger(-30, 0), `days`) : null;
   return {
     id: nanoid(),
     info: generateInfo(),
     description: generateDescription(),
-    time: generateTime(),
-    date: new Date(getRandomInteger(0, new Date())),
+    time: getRandomInteger(30, 180),
+    date,
     genre: choise(genres, getRandomInteger(1, genres.length - 1)),
     comments: generateRandomComments(),
     isFavorite: Boolean(getRandomInteger(0, 1)),
-    isViewed: Boolean(getRandomInteger(0, 1)),
+    isViewed,
     isWatchlist: Boolean(getRandomInteger(0, 1)),
     rating: generateRating(0, 9),
     age: getRandomInteger(0, 18),
@@ -135,5 +131,6 @@ export const generateFilm = () => {
     screenwriters: choise(screenwriters, getRandomInteger(1, screenwriters.length - 1)),
     actors: choise(actors, getRandomInteger(1, actors.length - 1)),
     country: choise(countries, getRandomInteger(1, countries.length - 1)),
+    watchedData,
   };
 };

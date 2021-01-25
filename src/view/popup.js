@@ -1,5 +1,6 @@
 import dayjs from "dayjs";
 import Smart from "./smart";
+import {formatDuration} from "../utils";
 
 const createGenresTemplate = (genre) => {
   return genre.map((item) => `<span class="film-details__genre">${item}</span>`).join(``);
@@ -63,7 +64,7 @@ const createTemplatePopupFilm = (film) => {
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Runtime</td>
-              <td class="film-details__cell">${time}</td>
+              <td class="film-details__cell">${formatDuration(time)}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Country</td>
@@ -104,8 +105,6 @@ const createTemplatePopupFilm = (film) => {
 export default class Popup extends Smart {
   constructor(film) {
     super();
-    this._element = null;
-    this._clickHandler = this._clickHandler.bind(this);
     this._editClickHandler = this._editClickHandler.bind(this);
     this._film = film;
     this._data = Popup.parseFilmToData(film);
@@ -113,7 +112,7 @@ export default class Popup extends Smart {
   }
 
   getTemplate() {
-    return createTemplatePopupFilm(this._film);
+    return createTemplatePopupFilm(this._data);
   }
 
   restoreHandlers() {

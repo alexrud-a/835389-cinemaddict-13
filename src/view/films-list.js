@@ -1,4 +1,4 @@
-import AbstractView from "./abstract.js";
+import Smart from "./smart";
 
 const createFilmListTemplate = () => {
   return `<section class="films">
@@ -10,23 +10,10 @@ const createFilmListTemplate = () => {
 
     </section>
 
-    <section class="films-list films-list--extra">
-      <h2 class="films-list__title">Top rated</h2>
-
-      <div class="films-list__container js-film-list-rated">
-      </div>
-    </section>
-
-    <section class="films-list films-list--extra">
-      <h2 class="films-list__title">Most commented</h2>
-
-      <div class="films-list__container js-film-list-commented">
-      </div>
-    </section>
   </section>`;
 };
 
-export default class FilmList extends AbstractView {
+export default class FilmList extends Smart {
   getTemplate() {
     return createFilmListTemplate();
   }

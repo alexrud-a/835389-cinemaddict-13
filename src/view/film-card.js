@@ -1,5 +1,6 @@
 import dayjs from "dayjs";
 import Base from "./abstract";
+import {formatDuration} from "./../utils";
 
 const createCardFilmTemplate = (film) => {
   const {id, info, time, date, rating, isFavorite, isViewed, isWatchlist, genre, comments, description} = film;
@@ -27,12 +28,13 @@ const createCardFilmTemplate = (film) => {
     }
     return slicedDescription;
   };
+
   return `<article class="film-card" id="${id}">
           <h3 class="js-open-popup film-card__title">${info.title}</h3>
           <p class="film-card__rating">${rating}</p>
           <p class="film-card__info">
             <span class="film-card__year">${year}</span>
-            <span class="film-card__duration">${time}</span>
+            <span class="film-card__duration">${formatDuration(time)}</span>
             <span class="film-card__genre">${genre[0]}</span>
           </p>
           <img src="./images/posters/${info.poster}" alt="" class="js-open-popup film-card__poster">
@@ -49,8 +51,6 @@ const createCardFilmTemplate = (film) => {
 export default class CardFilm extends Base {
   constructor(film) {
     super();
-    this._element = null;
-    this._clickHandler = this._clickHandler.bind(this);
     this._editClickHandler = this._editClickHandler.bind(this);
     this._film = film;
   }
