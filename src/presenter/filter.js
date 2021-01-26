@@ -16,8 +16,8 @@ export default class FilterPresenter {
   }
 
   init() {
-    this._renderMenu();
     this._renderSort();
+    this._renderMenu();
   }
 
   observeFilms(films) {
@@ -35,7 +35,7 @@ export default class FilterPresenter {
     if (prevMenu) {
       replace(this._menu, prevMenu);
     } else {
-      render(this._filterContainer, this._menu.getElement(), RenderPosition.BEFOREEND);
+      render(this._filterContainer, this._menu.getElement(), RenderPosition.AFTERBEGIN);
     }
     this._menu.setClickHandler(this._handleFilterItemClick);
     this._menu.setClickStatsHandler(this._handleStatsItemClick);
@@ -61,7 +61,7 @@ export default class FilterPresenter {
     if (sortPanel) {
       replace(this._sortPanel, sortPanel);
     } else {
-      render(this._filterContainer, this._sortPanel.getElement(), RenderPosition.BEFOREEND);
+      render(this._filterContainer, this._sortPanel.getElement(), RenderPosition.AFTERBEGIN);
     }
     this._sortPanel.setClickHandler(this._handleSortItemClick);
   }

@@ -37,7 +37,7 @@ const createCardFilmTemplate = (film) => {
             <span class="film-card__duration">${formatDuration(time)}</span>
             <span class="film-card__genre">${genre[0]}</span>
           </p>
-          <img src="./images/posters/${info.poster}" alt="" class="js-open-popup film-card__poster">
+          <img src="${info.poster}" alt="" class="js-open-popup film-card__poster">
           <p class="film-card__description">${sliceDescription()}</p>
           <a class="js-open-popup film-card__comments">${comments.length} comments</a>
           <div class="film-card__controls">

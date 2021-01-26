@@ -2,19 +2,21 @@ import FilmListRated from "../view/films-list-rated";
 import {compareValues, render, RenderPosition} from "../utils";
 import FilmCardPresenter from "./filmCard";
 import FilmPopupPresenter from "./filmPopup";
+import CommentsModel from "../model/comments";
 const siteBody = document.querySelector(`body`);
 
 export default class RatedFilmsPresenter {
-  constructor(filmsContainer, filmsModel, filterModel, filterPresenter, filmsPerPage) {
-    this._filterPresenter = filterPresenter;
+  constructor(filmsContainer, filmsModel, filterModel, filmsPerPage, api) {
     this._filmsContainer = filmsContainer;
+    this._isLoading = true;
 
     this._filmsModel = filmsModel;
     this._filmsModel.addObserver(this.observeFilms.bind(this));
     this._filterModel = filterModel;
     this._filterModel.addObserver(() => this.observeFilms(this._sourcedFilms, null));
+    this._commentsModel = new CommentsModel();
+    this._api = api;
 
-    this._filterPresenter = filterPresenter;
     this._filmPresenter = {};
 
     this._sourcedFilms = [];
@@ -30,27 +32,33 @@ export default class RatedFilmsPresenter {
     this._handleAddComment = this._handleAddComment.bind(this);
     this._handlePopupRemoveComment = this._handlePopupRemoveComment.bind(this);
 
-    this._popup = new FilmPopupPresenter(siteBody, this._handlePopupChange, this._handlePopupRemoveComment, this._handleAddComment);
+    this._popup = new FilmPopupPresenter(siteBody, this._handlePopupChange, this._handlePopupRemoveComment, this._handleAddComment, this._commentsModel);
   }
 
   init() {
     this._sourcedFilms = this._filmsModel.getFilms();
     this._films = this._sourcedFilms.slice().sort(compareValues(`rating`, `desc`));
     this._renderedFilmsCount = this._filmsPerPage;
-    this._renderFilmsContainer();
+    if (this._films.length > 0) {
+      this._renderFilmsContainer();
+    }
   }
 
   observeFilms(films) {
+    if (this._isLoading) {
+      this.init();
+    }
     this._clearList();
     this._sourcedFilms = films.slice();
     let updatedFilms = this._sourcedFilms;
 
     this._films = updatedFilms.slice().sort(compareValues(`rating`, `desc`));
-    this._renderFilms();
+    if (this._films.length > 0) {
+      this._renderFilms();
+    }
   }
 
   _renderFilmsContainer() {
-    this._filterPresenter.init();
     render(this._filmsContainer, this._filmList.getElement(), RenderPosition.BEFOREEND);
     this._mainFilmList = this._filmList.getElement().querySelector(`.js-film-list-rated`);
     this._renderFilms();
@@ -77,6 +85,12 @@ export default class RatedFilmsPresenter {
   }
 
   _handlePopupDisplay(film) {
+    this._api.getComments(film).then((comments) => {
+      this._commentsModel.setCommentsFilm(comments, film);
+    })
+      .catch(() => {
+        this._commentsModel.setCommentsFilm([], {});
+      });
     this._popup.init(film);
   }
 

@@ -5,23 +5,26 @@ import {nanoid} from "nanoid";
 import he from "he";
 
 export default class FilmPopupPresenter {
-  constructor(container, changeData, deleteComment, addComment) {
+  constructor(container, changeData, deleteComment, addComment, commentsModel) {
     this._container = container;
-    this._film = null;
+    this._film = {};
     this._popup = null;
     this._changeData = changeData;
     this._deleteComment = deleteComment;
     this._addComment = addComment;
     this._commentsList = null;
     this._posScroll = null;
+    this._commentsModel = commentsModel;
+    this._commentsModel.addObserver(this.observeComments.bind(this));
+    this._comments = [];
   }
 
   init(film) {
     this._film = film;
-
+    this._comments = this._commentsModel.getCommentsFilm();
+    this._commentsList = new Comments(this._comments);
     const prevPopup = this._popup;
     this._popup = new Popup(this._film);
-    this._commentsList = new Comments(this._film.comments);
 
     if (prevPopup && this._container.classList.contains(`hide-overflow`)) {
       replace(this._popup, prevPopup);
@@ -37,6 +40,10 @@ export default class FilmPopupPresenter {
     }
 
     remove(prevPopup);
+  }
+
+  observeComments(comments, film) {
+    this.init(film, comments);
   }
 
   _renderPopup() {
