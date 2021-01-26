@@ -217,10 +217,11 @@ export default class FilmsPresenter {
 
   _handleAddComment(film, comment) {
     this._api.addComment(comment, film).then((update) => {
-      console.log(update.movie);
+      update.comments.map((item) => this._commentsModel.adaptToClient(item));
+      this._filmsModel.adaptToClient(update.movie);
       this._commentsModel.addComment(update.comments, update.movie);
-      this._filmsModel.updateFilm(film);
-      this._popup.init(film, this._commentsModel.getCommentsFilm());
+      this._filmsModel.updateFilm(update.movie);
+      this._popup.init(update.movie, this._commentsModel.getCommentsFilm());
     });
   }
 
