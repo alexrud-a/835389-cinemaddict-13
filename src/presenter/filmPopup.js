@@ -19,9 +19,9 @@ export default class FilmPopupPresenter {
     this._comments = [];
   }
 
-  init(film, comments) {
+  init(film) {
     this._film = film;
-    this._comments = comments;
+    this._comments = this._commentsModel.getCommentsFilm();
     this._commentsList = new Comments(this._comments);
     const prevPopup = this._popup;
     this._popup = new Popup(this._film);

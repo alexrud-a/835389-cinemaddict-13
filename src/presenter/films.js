@@ -27,6 +27,7 @@ export default class FilmsPresenter {
 
     this._filmPresenter = {};
     this._emptyPresenter = emptyPresenter;
+    this._filterPresenter = filterPresenter;
 
     this._sourcedFilms = [];
     this._films = [];
@@ -52,12 +53,16 @@ export default class FilmsPresenter {
   }
 
   init() {
-    this._emptyPresenter.destroy();
-    remove(this._loadingComponent);
     this._sourcedFilms = this._filmsModel.getFilms().slice();
     this._films = this._sourcedFilms.slice();
     this._renderedFilmsCount = this._filmsPerPage;
-    this._renderFilmsContainer();
+    remove(this._loadingComponent);
+    this._filterPresenter.init();
+    if (this._sourcedFilms.length > 0) {
+      this._renderFilmsContainer();
+    } else {
+      this._emptyPresenter.init();
+    }
   }
 
   _renderLoading() {
@@ -69,8 +74,8 @@ export default class FilmsPresenter {
       this._renderLoading();
       this.init();
     }
-    this._sourcedFilms = films.slice();
     this._clearList();
+    this._sourcedFilms = films.slice();
     let updatedFilms = this._sourcedFilms;
 
     if (this._filterModel.getSortType().filter !== `all` || this._filterModel.getSortType().sort !== `default`) {
@@ -93,7 +98,13 @@ export default class FilmsPresenter {
     }
 
     this._films = updatedFilms;
-    this._renderFilms();
+
+    if (this._films.length > 0) {
+      this._emptyPresenter.destroy();
+      this._renderFilms();
+    } else {
+      this._emptyPresenter.init();
+    }
   }
 
   observeProfileHistory({sort}) {
@@ -128,6 +139,12 @@ export default class FilmsPresenter {
       this._renderProfile();
     }
     this._renderFilms();
+    this._renderStats();
+
+    this._stats.hide();
+  }
+
+  _renderStats() {
     let prevStats = this._stats;
     this._stats = new Stats(this._sourcedFilms, `ALL_TIME`, profileRating(this._filterModel.getSort().history));
     if (prevStats) {
@@ -135,8 +152,6 @@ export default class FilmsPresenter {
     } else {
       render(this._filmsContainer, this._stats.getElement(), RenderPosition.BEFOREEND);
     }
-
-    this._stats.hide();
   }
 
   _renderCard(film, container) {
@@ -182,15 +197,18 @@ export default class FilmsPresenter {
   }
 
   _handlePopupDisplay(film) {
+    this._popup.init(film);
     this._api.getComments(film).then((comments) => {
       this._commentsModel.setCommentsFilm(comments, film);
     })
       .catch(() => {
         this._commentsModel.setCommentsFilm([], {});
       });
-    this._popup.init(film, this._commentsModel.getCommentsFilm());
   }
 
+  _handlePopupRemoveComment(updatedFilm) {
+    this._filmsModel.updateFilm(updatedFilm);
+    this._popup.init(updatedFilm);
   _handlePopupRemoveComment(updatedFilm, comment) {
     this._api.deleteComment(comment).then(() => {
       this._commentsModel.removeComment(comment, updatedFilm);
@@ -211,10 +229,13 @@ export default class FilmsPresenter {
   _handlePopupChange(updatedFilm) {
     this._api.updateFilm(updatedFilm).then((update) => {
       this._filmsModel.updateFilm(update);
-      this._popup.init(update, this._commentsModel.getCommentsFilm());
+      this._popup.init(update);
     });
   }
 
+  _handleAddComment(updatedFilm) {
+    this._filmsModel.updateFilm(updatedFilm);
+    this._popup.init(updatedFilm);
   _handleAddComment(film, comment) {
     this._api.addComment(comment, film).then((update) => {
       update.comments.map((item) => this._commentsModel.adaptToClient(item));
@@ -230,17 +251,20 @@ export default class FilmsPresenter {
       .values(this._filmPresenter)
       .forEach((presenter) => presenter.destroy());
     this._filmPresenter = {};
-    this._filterPresenter = {};
     remove(this._loadMore);
   }
 
   _hide() {
-    this._stats.show();
-    this._filmList.hide();
+    if (this._stats !== null) {
+      this._stats.show();
+      this._filmList.hide();
+    }
   }
 
   _show() {
-    this._stats.hide();
-    this._filmList.show();
+    if (this._stats !== null) {
+      this._stats.hide();
+      this._filmList.show();
+    }
   }
 }

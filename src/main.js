@@ -52,16 +52,12 @@ const emptyPresenter = new EmptyPresenter(siteMainElement);
 const filterPresenter = new FilterPresenter(siteMainElement, filterModel, filmsModel);
 const filmsPresenter = new FilmsPresenter(siteMainElement, filmsModel, filterModel, filterPresenter, FilmsPerSection.MAIN, emptyPresenter, api);
 
-if (filmsModel.getFilms().length > 0) {
-  filmsPresenter.init();
-  const filmsExtraContainer = siteMainElement.querySelector(`.films`);
-  const ratedFilmsPresenter = new RatedFilmsPresenter(filmsExtraContainer, filmsModel, filterModel, FilmsPerSection.RATED, api);
-  const commentedFilmsPresenter = new CommentedFilmsPresenter(filmsExtraContainer, filmsModel, filterModel, FilmsPerSection.COMMENTED, api);
-  ratedFilmsPresenter.init();
-  commentedFilmsPresenter.init();
-} else {
-  emptyPresenter.init();
-}
+filmsPresenter.init();
+const filmsExtraContainer = siteMainElement.querySelector(`.films`);
+const ratedFilmsPresenter = new RatedFilmsPresenter(filmsExtraContainer, filmsModel, filterModel, FilmsPerSection.RATED, api);
+const commentedFilmsPresenter = new CommentedFilmsPresenter(filmsExtraContainer, filmsModel, filterModel, FilmsPerSection.COMMENTED, api);
+ratedFilmsPresenter.init();
+commentedFilmsPresenter.init();
 
 const footerPresenter = new FooterPresenter(siteFooterStatistics, filmsModel);
 footerPresenter.init(filmsModel.getFilms().length);
