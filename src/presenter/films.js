@@ -206,9 +206,6 @@ export default class FilmsPresenter {
       });
   }
 
-  _handlePopupRemoveComment(updatedFilm) {
-    this._filmsModel.updateFilm(updatedFilm);
-    this._popup.init(updatedFilm);
   _handlePopupRemoveComment(updatedFilm, comment) {
     this._api.deleteComment(comment).then(() => {
       this._commentsModel.removeComment(comment, updatedFilm);
@@ -233,9 +230,6 @@ export default class FilmsPresenter {
     });
   }
 
-  _handleAddComment(updatedFilm) {
-    this._filmsModel.updateFilm(updatedFilm);
-    this._popup.init(updatedFilm);
   _handleAddComment(film, comment) {
     this._api.addComment(comment, film).then((update) => {
       update.comments.map((item) => this._commentsModel.adaptToClient(item));
