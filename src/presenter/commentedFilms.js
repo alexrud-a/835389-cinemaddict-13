@@ -40,7 +40,9 @@ export default class CommentedFilmsPresenter {
     this._sourcedFilms = this._filmsModel.getFilms();
     this._films = this._sourcedFilms.slice().sort(compareValues(`comments`, `desc`));
     this._renderedFilmsCount = this._filmsPerPage;
-    this._renderFilmsContainer();
+    if (this._films.length > 0) {
+      this._renderFilmsContainer();
+    }
   }
 
   observeFilms(films) {
@@ -52,7 +54,9 @@ export default class CommentedFilmsPresenter {
     let updatedFilms = this._sourcedFilms;
 
     this._films = updatedFilms.slice().sort(compareValues(`comments`, `desc`));
-    this._renderFilms();
+    if (this._films.length > 0) {
+      this._renderFilms();
+    }
   }
 
   _renderFilmsContainer() {
@@ -88,7 +92,7 @@ export default class CommentedFilmsPresenter {
       .catch(() => {
         this._commentsModel.setCommentsFilm([], {});
       });
-    this._popup.init(film, this._commentsModel.getCommentsFilm());
+    this._popup.init(film);
   }
 
   _handlePopupRemoveComment(updatedFilm) {
