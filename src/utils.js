@@ -121,3 +121,7 @@ export const remove = (component) => {
   component.getElement().remove();
   component.removeElement();
 };
+
+export const isOnline = () => {
+  return window.navigator.onLine;
+};

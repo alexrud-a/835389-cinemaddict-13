@@ -6,12 +6,19 @@ import EmptyPresenter from "./presenter/empty";
 import FooterPresenter from "./presenter/footer";
 import Films from "./model/films";
 import Filter from "./model/filter";
-import Api from "./api.js";
+import Api from "./api/api.js";
+import Store from './api/store';
+import Provider from './api/provider';
 
 const AUTHORIZATION = `Basic s9KYnCvF66Xu8tUca`;
 const END_POINT = `https://13.ecmascript.pages.academy/cinemaddict`;
+const STORE_PREFIX = `cinemaddict-localstorage`;
+const STORE_VER = `v13`;
+const STORE_NAME = `${STORE_PREFIX}-${STORE_VER}`;
 
 const api = new Api(END_POINT, AUTHORIZATION);
+const store = new Store(STORE_NAME, window.localStorage);
+const apiWithProvider = new Provider(api, store);
 
 const sortType = {
   sort: `default`,
@@ -50,14 +57,27 @@ filterModel.setSort(sort);
 
 const emptyPresenter = new EmptyPresenter(siteMainElement);
 const filterPresenter = new FilterPresenter(siteMainElement, filterModel, filmsModel);
-const filmsPresenter = new FilmsPresenter(siteMainElement, filmsModel, filterModel, filterPresenter, FilmsPerSection.MAIN, emptyPresenter, api);
+const filmsPresenter = new FilmsPresenter(siteMainElement, filmsModel, filterModel, filterPresenter, FilmsPerSection.MAIN, emptyPresenter, apiWithProvider);
 
 filmsPresenter.init();
 const filmsExtraContainer = siteMainElement.querySelector(`.films`);
-const ratedFilmsPresenter = new RatedFilmsPresenter(filmsExtraContainer, filmsModel, filterModel, FilmsPerSection.RATED, api);
-const commentedFilmsPresenter = new CommentedFilmsPresenter(filmsExtraContainer, filmsModel, filterModel, FilmsPerSection.COMMENTED, api);
+const ratedFilmsPresenter = new RatedFilmsPresenter(filmsExtraContainer, filmsModel, filterModel, FilmsPerSection.RATED, apiWithProvider);
+const commentedFilmsPresenter = new CommentedFilmsPresenter(filmsExtraContainer, filmsModel, filterModel, FilmsPerSection.COMMENTED, apiWithProvider);
 ratedFilmsPresenter.init();
 commentedFilmsPresenter.init();
 
 const footerPresenter = new FooterPresenter(siteFooterStatistics, filmsModel);
 footerPresenter.init(filmsModel.getFilms().length);
+
+window.addEventListener(`load`, () => {
+  navigator.serviceWorker.register(`/sw.js`);
+});
+
+window.addEventListener(`online`, () => {
+  document.title = document.title.replace(` [offline]`, ``);
+  apiWithProvider.sync();
+});
+
+window.addEventListener(`offline`, () => {
+  document.title += ` [offline]`;
+});
