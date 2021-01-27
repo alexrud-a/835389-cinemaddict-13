@@ -30,10 +30,6 @@ export default class SortPanel extends Smart {
     return createSortPanelTemplate(this._sortType);
   }
 
-  getActiveMenuLink() {
-    return super.getElement().querySelector(`.sort__button--active`);
-  }
-
   setClickHandler(callback) {
     this._callback.click = callback;
     for (let btn of this.getElement().querySelectorAll(`.sort__button`)) {

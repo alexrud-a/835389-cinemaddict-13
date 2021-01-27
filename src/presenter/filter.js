@@ -44,14 +44,10 @@ export default class FilterPresenter {
   _handleFilterItemClick(evt) {
     this._showSort();
     this._filterModel.setSortType(this._filterModel.getSortType().sort, evt.target.getAttribute(`data-sort`), false);
-    this._menu.getActiveMenuLink().classList.remove(`main-navigation__item--active`);
-    evt.target.classList.add(`main-navigation__item--active`);
   }
 
-  _handleStatsItemClick(evt) {
+  _handleStatsItemClick() {
     this._filterModel.setSortType(this._filterModel.getSortType().sort, this._filterModel.getSortType().filter, true);
-    this._menu.getActiveMenuLink().classList.remove(`main-navigation__item--active`);
-    evt.target.classList.add(`main-navigation__item--active`);
     this._hideSort();
   }
 
@@ -68,8 +64,6 @@ export default class FilterPresenter {
 
   _handleSortItemClick(evt) {
     this._filterModel.setSortType(evt.target.getAttribute(`data-sort`), this._filterModel.getSortType().filter, false);
-    this._sortPanel.getActiveMenuLink().classList.remove(`sort__button--active`);
-    evt.target.classList.add(`sort__button--active`);
   }
 
   _hideSort() {
