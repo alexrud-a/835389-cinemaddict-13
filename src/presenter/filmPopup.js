@@ -1,7 +1,6 @@
 import Popup from "../view/popup";
 import Comments from "../view/comments";
 import {remove, render, RenderPosition, replace} from "../utils";
-import {nanoid} from "nanoid";
 import he from "he";
 
 export default class FilmPopupPresenter {

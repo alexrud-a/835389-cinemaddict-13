@@ -68,4 +68,59 @@ export default class CommentsModel extends Observer {
 
     return adaptedComment;
   }
+
+  static adaptToClientAddCommented(update) {
+    const updatedComment = [];
+    update.comments.map((comment) => {
+      comment = Object.assign(
+          {},
+          comment,
+          {
+            info: {
+              author: comment.author,
+              text: comment.comment,
+              emotion: comment.emotion,
+            },
+          }
+      );
+
+      delete comment.author;
+      delete comment.comment;
+      delete comment.emotion;
+
+      updatedComment.push(comment);
+    });
+
+    const film = update.movie;
+    const adaptedFilm = Object.assign(
+        {},
+        film,
+        {
+          actors: film.film_info.actors,
+          age: film.film_info.age_rating,
+          info: {
+            originTitle: film.film_info.alternative_title,
+            poster: film.film_info.poster,
+            title: film.film_info.title,
+          },
+          description: film.film_info.description,
+          regisseur: film.film_info.director,
+          genre: film.film_info.genre,
+          date: film.film_info.release.date,
+          country: film.film_info.release.release_country,
+          time: film.film_info.runtime,
+          rating: film.film_info.total_rating,
+          screenwriters: film.film_info.writers,
+          isWatchlist: film.user_details.watchlist,
+          isViewed: film.user_details.already_watched,
+          isFavorite: film.user_details.favorite,
+          watchedData: film.user_details.watching_date
+        }
+    );
+
+    delete adaptedFilm.film_info;
+    delete adaptedFilm.user_details;
+
+    return [adaptedFilm, updatedComment];
+  }
 }
