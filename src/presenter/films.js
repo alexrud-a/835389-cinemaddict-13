@@ -2,7 +2,7 @@ import Profile from "../view/profile";
 import FilmList from "../view/films-list";
 import Loadmore from "../view/loadmore";
 import Loading from "../view/loading";
-import {render, RenderPosition, compareValues, remove, replace, profileRating, FilmsPerSection} from "../utils";
+import {render, RenderPosition, compareValues, remove, replace, profileRating} from "../utils";
 
 import FilmCardPresenter from "./filmCard";
 import FilmPopupPresenter from "./filmPopup";
@@ -102,8 +102,6 @@ export default class FilmsPresenter {
     if (this._films.length > 0) {
       this._emptyPresenter.destroy();
       this._renderFilms();
-      this._ratedFilmsPresenter._renderFilms();
-      this._commentedFilmsPresenter._renderFilms();
     } else {
       this._emptyPresenter.init();
     }
@@ -246,8 +244,6 @@ export default class FilmsPresenter {
       .forEach((presenter) => presenter.destroy());
     this._filmPresenter = {};
     remove(this._loadMore);
-    this._commentedFilmsPresenter._clearList();
-    this._ratedFilmsPresenter._clearList();
   }
 
   _hide() {
