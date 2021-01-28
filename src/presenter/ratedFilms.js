@@ -11,9 +11,6 @@ export default class RatedFilmsPresenter {
     this._isLoading = true;
 
     this._filmsModel = filmsModel;
-    this._filmsModel.addObserver(this.observeFilms.bind(this));
-    this._filterModel = filterModel;
-    this._filterModel.addObserver(() => this.observeFilms(this._sourcedFilms, null));
     this._commentsModel = new CommentsModel();
     this._api = api;
 
@@ -41,20 +38,6 @@ export default class RatedFilmsPresenter {
     this._renderedFilmsCount = this._filmsPerPage;
     if (this._films.length > 0) {
       this._renderFilmsContainer();
-    }
-  }
-
-  observeFilms(films) {
-    if (this._isLoading) {
-      this.init();
-    }
-    this._clearList();
-    this._sourcedFilms = films.slice();
-    let updatedFilms = this._sourcedFilms;
-
-    this._films = updatedFilms.slice().sort(compareValues(`rating`, `desc`));
-    if (this._films.length > 0) {
-      this._renderFilms();
     }
   }
 
@@ -109,7 +92,7 @@ export default class RatedFilmsPresenter {
     this._popup.init(updatedFilm);
   }
 
-  _clearList() {
+  clearList() {
     Object
       .values(this._filmPresenter)
       .forEach((presenter) => presenter.destroy());

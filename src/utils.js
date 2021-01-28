@@ -125,3 +125,9 @@ export const remove = (component) => {
 export const isOnline = () => {
   return window.navigator.onLine;
 };
+
+export const FilmsPerSection = {
+  MAIN: 5,
+  COMMENTED: 2,
+  RATED: 2,
+};

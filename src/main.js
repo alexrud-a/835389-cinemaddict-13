@@ -1,7 +1,5 @@
 import FilterPresenter from "./presenter/filter";
 import FilmsPresenter from "./presenter/films";
-import RatedFilmsPresenter from "./presenter/ratedFilms";
-import CommentedFilmsPresenter from "./presenter/commentedFilms";
 import EmptyPresenter from "./presenter/empty";
 import FooterPresenter from "./presenter/footer";
 import Films from "./model/films";
@@ -20,16 +18,12 @@ const api = new Api(END_POINT, AUTHORIZATION);
 const store = new Store(STORE_NAME, window.localStorage);
 const apiWithProvider = new Provider(api, store);
 
+import {FilmsPerSection} from "./utils";
+
 const sortType = {
   sort: `default`,
   filter: `all`,
   stats: false,
-};
-
-const FilmsPerSection = {
-  MAIN: 5,
-  COMMENTED: 2,
-  RATED: 2,
 };
 
 const siteBody = document.querySelector(`body`);
@@ -60,11 +54,6 @@ const filterPresenter = new FilterPresenter(siteMainElement, filterModel, filmsM
 const filmsPresenter = new FilmsPresenter(siteMainElement, filmsModel, filterModel, filterPresenter, FilmsPerSection.MAIN, emptyPresenter, apiWithProvider);
 
 filmsPresenter.init();
-const filmsExtraContainer = siteMainElement.querySelector(`.films`);
-const ratedFilmsPresenter = new RatedFilmsPresenter(filmsExtraContainer, filmsModel, filterModel, FilmsPerSection.RATED, apiWithProvider);
-const commentedFilmsPresenter = new CommentedFilmsPresenter(filmsExtraContainer, filmsModel, filterModel, FilmsPerSection.COMMENTED, apiWithProvider);
-ratedFilmsPresenter.init();
-commentedFilmsPresenter.init();
 
 const footerPresenter = new FooterPresenter(siteFooterStatistics, filmsModel);
 footerPresenter.init(filmsModel.getFilms().length);
