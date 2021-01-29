@@ -137,9 +137,3 @@ export const FilmsPerSection = {
   COMMENTED: 2,
   RATED: 2,
 };
-
-export const sort = {
-  watchlist: filmsModel.getFilms().filter((item) => item.isWatchlist).length,
-  history: filmsModel.getFilms().filter((item) => item.isViewed).length,
-  favorites: filmsModel.getFilms().filter((item) => item.isFavorite).length,
-};

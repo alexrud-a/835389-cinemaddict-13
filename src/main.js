@@ -18,13 +18,19 @@ const api = new Api(END_POINT, AUTHORIZATION);
 const store = new Store(STORE_NAME, window.localStorage);
 const apiWithProvider = new Provider(api, store);
 
-import {FilmsPerSection, sort, sortType, isOnline} from "./utils";
+import {FilmsPerSection, sortType} from "./utils";
 
 const siteBody = document.querySelector(`body`);
 const siteMainElement = siteBody.querySelector(`.main`);
 const siteFooterStatistics = siteBody.querySelector(`.footer__statistics`);
 
 const filmsModel = new Films();
+
+const sort = {
+  watchlist: filmsModel.getFilms().filter((item) => item.isWatchlist).length,
+  history: filmsModel.getFilms().filter((item) => item.isViewed).length,
+  favorites: filmsModel.getFilms().filter((item) => item.isFavorite).length,
+};
 
 const filterModel = new Filter();
 filterModel.setSortType(sortType.sort, sortType.filter, sortType.stats);

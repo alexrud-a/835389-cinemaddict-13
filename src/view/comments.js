@@ -4,7 +4,7 @@ dayjs.extend(relativeTime);
 import Smart from "./smart";
 import {createElement, render, RenderPosition} from "../utils";
 
-const createCommentTemplate = (comment,isDeleting) => {
+const createCommentTemplate = (comment) => {
   const {info: {emotion, text, author}, date, id} = comment;
 
   return `<li class="film-details__comment" id="${id}">
@@ -16,7 +16,7 @@ const createCommentTemplate = (comment,isDeleting) => {
               <p class="film-details__comment-info">
                 <span class="film-details__comment-author">${author}</span>
                 <span class="film-details__comment-day">${dayjs().to(dayjs(date))}</span>
-                <button class="film-details__comment-delete"${isDeleting ? `disabled` : ``}>${isDeleting ? `Deleting...` : `Delete`}</button>
+                <button class="film-details__comment-delete">Delete</button>
               </p>
             </div>
           </li>`;
