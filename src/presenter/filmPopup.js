@@ -83,7 +83,7 @@ export default class FilmPopupPresenter {
   _clickFilmInfo(evt) {
     this._posScroll = this.getPositionScroll();
     let type = evt.target.getAttribute(`data-type`);
-    this._changeData(Object.assign({}, this._film, {[type]: !this._film[type]}));
+    this._changeData(this.getPatchedFilm({[type]: !this._film[type]}));
   }
 
   _removeFilmComment(evt) {
@@ -92,7 +92,7 @@ export default class FilmPopupPresenter {
     let commentInd = this._comments.findIndex((item) => item.id === commentId);
     let filmsCommentInd = this._film.comments.findIndex((item) => item.id === commentId);
     this._film.comments.splice(filmsCommentInd, 1);
-    this._deleteComment(Object.assign({}, this._film, {comments: this._film.comments}), this._comments[commentInd]);
+    this._deleteComment(Object.assign({}, this._film, this.getPatchedFilm({comments: this._film.comments})), this._comments[commentInd]);
   }
 
   _addFilmCommentEmotion(evt) {
@@ -132,5 +132,9 @@ export default class FilmPopupPresenter {
       };
       this._addComment(this._film, newComment);
     }
+  }
+
+  getPatchedFilm(patch) {
+    return Object.assign({}, this._film, patch);
   }
 }

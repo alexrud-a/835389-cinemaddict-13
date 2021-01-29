@@ -18,32 +18,13 @@ const api = new Api(END_POINT, AUTHORIZATION);
 const store = new Store(STORE_NAME, window.localStorage);
 const apiWithProvider = new Provider(api, store);
 
-import {FilmsPerSection} from "./utils";
-
-const sortType = {
-  sort: `default`,
-  filter: `all`,
-  stats: false,
-};
+import {FilmsPerSection, sort, sortType, isOnline} from "./utils";
 
 const siteBody = document.querySelector(`body`);
 const siteMainElement = siteBody.querySelector(`.main`);
 const siteFooterStatistics = siteBody.querySelector(`.footer__statistics`);
 
 const filmsModel = new Films();
-
-api.getFilms().then((films) => {
-  filmsModel.setFilms(films);
-})
-  .catch(() => {
-    filmsModel.setFilms([]);
-  });
-
-const sort = {
-  watchlist: filmsModel.getFilms().filter((item) => item.isWatchlist).length,
-  history: filmsModel.getFilms().filter((item) => item.isViewed).length,
-  favorites: filmsModel.getFilms().filter((item) => item.isFavorite).length,
-};
 
 const filterModel = new Filter();
 filterModel.setSortType(sortType.sort, sortType.filter, sortType.stats);
@@ -53,7 +34,14 @@ const emptyPresenter = new EmptyPresenter(siteMainElement);
 const filterPresenter = new FilterPresenter(siteMainElement, filterModel, filmsModel);
 const filmsPresenter = new FilmsPresenter(siteMainElement, filmsModel, filterModel, filterPresenter, FilmsPerSection.MAIN, emptyPresenter, apiWithProvider);
 
-filmsPresenter.init();
+api.getFilms().then((films) => {
+  filmsModel.setFilms(films);
+  filmsPresenter.init();
+})
+  .catch(() => {
+    filmsModel.setFilms([]);
+    filmsPresenter.init();
+  });
 
 const footerPresenter = new FooterPresenter(siteFooterStatistics, filmsModel);
 footerPresenter.init(filmsModel.getFilms().length);
