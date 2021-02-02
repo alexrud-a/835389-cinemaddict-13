@@ -6,110 +6,111 @@ export default class Films extends Observer {
     this._films = [];
   }
 
-  setFilms(films) {
+  static adaptFilmToClient(film) {
+    const {id, film_info: filmInfo, comments, user_details: userInfo} = film;
+
+    const filmDetails = {
+      title: filmInfo.title,
+      originalTitle: filmInfo.alternative_title,
+      totalRating: filmInfo.total_rating,
+      posterUrl: filmInfo.poster,
+      ageRating: filmInfo.age_rating,
+      director: filmInfo.director,
+      writers: [...filmInfo.writers],
+      actors: [...filmInfo.actors],
+      releaseDate: new Date(filmInfo.release.date),
+      country: filmInfo.release.release_country,
+      runtime: filmInfo.runtime,
+      genres: [...filmInfo.genre],
+      desc: filmInfo.description,
+    };
+
+    const userDetails = {
+      isWatchList: userInfo.watchlist,
+      isWatched: userInfo.already_watched,
+      watchingDate: new Date(userInfo.watching_date),
+      isFavorite: userInfo.favorite,
+    };
+
+    return Object.assign({}, {id, comments: [...comments]}, filmDetails, userDetails);
+  }
+
+  static adaptFilmToServer(film) {
+    const filmDetails = {
+      title: film.title,
+      [`alternative_title`]: film.originalTitle,
+      [`total_rating`]: film.totalRating,
+      poster: film.posterUrl,
+      [`age_rating`]: film.ageRating,
+      director: film.director,
+      writers: [...film.writers],
+      actors: [...film.actors],
+      release: {
+        date: film.releaseDate.toISOString(),
+        [`release_country`]: film.country,
+      },
+      runtime: film.runtime,
+      genre: [...film.genres],
+      description: film.desc,
+    };
+
+    const userDetails = {
+      watchlist: film.isWatchList,
+      [`already_watched`]: film.isWatched,
+      [`watching_date`]: film.watchingDate.toISOString(),
+      favorite: film.isFavorite,
+    };
+
+    return {
+      id: film.id,
+      comments: [...film.comments],
+      [`film_info`]: Object.assign({}, filmDetails),
+      [`user_details`]: Object.assign({}, userDetails),
+    };
+  }
+
+  static adaptCommentToClient(comment) {
+    const adaptedComment = Object.assign({}, comment, {
+      text: comment.comment,
+      date: new Date(comment.date),
+      emoji: comment.emotion,
+    });
+
+    delete adaptedComment.comment;
+    delete adaptedComment.emotion;
+
+    return adaptedComment;
+  }
+
+  static adaptCommentToServer(comment) {
+    const adaptedComment = Object.assign({}, comment, {
+      emotion: comment.emoji,
+      date: comment.date.toISOString(),
+    });
+
+    delete adaptedComment.emoji;
+
+    return adaptedComment;
+  }
+
+  setFilms(updateType, films) {
     this._films = films.slice();
-    this._notify(this._films, null);
+    this._notify(updateType);
   }
 
   getFilms() {
     return this._films;
   }
 
-  updateFilm(update) {
+  updateFilm(updateType, update) {
     const index = this._films.findIndex((film) => film.id === update.id);
 
     if (index === -1) {
-      throw new Error(`Can't update unexisting task`);
+      throw new Error(`Can't update unexisting film`);
     }
 
-    this._films = [
-      ...this._films.slice(0, index),
-      update,
-      ...this._films.slice(index + 1)
-    ];
-    this._notify(this._films, update);
-  }
+    this._films = [...this._films.slice(0, index), update, ...this._films.slice(index + 1)];
 
-  static adaptToClient(film) {
-    const adaptedFilm = Object.assign(
-        {},
-        film,
-        {
-          actors: film.film_info.actors,
-          age: film.film_info.age_rating,
-          info: {
-            originTitle: film.film_info.alternative_title,
-            poster: film.film_info.poster,
-            title: film.film_info.title,
-          },
-          description: film.film_info.description,
-          regisseur: film.film_info.director,
-          genre: film.film_info.genre,
-          date: film.film_info.release.date,
-          country: film.film_info.release.release_country,
-          time: film.film_info.runtime,
-          rating: film.film_info.total_rating,
-          screenwriters: film.film_info.writers,
-          isWatchlist: film.user_details.watchlist,
-          isViewed: film.user_details.already_watched,
-          isFavorite: film.user_details.favorite,
-          watchedData: film.user_details.watching_date
-        }
-    );
-
-    delete adaptedFilm.film_info;
-    delete adaptedFilm.user_details;
-
-    return adaptedFilm;
-  }
-
-  static adaptToServer(film) {
-    const adaptedFilm = Object.assign(
-        {},
-        film,
-        {
-          "film_info": {
-            "actors": film.actors,
-            "age_rating": film.age,
-            "alternative_title": film.info.originTitle,
-            "description": film.description,
-            "director": film.regisseur,
-            "genre": film.genre,
-            "poster": film.info.poster,
-            "release": {
-              "date": film.date,
-              "release_country": film.country,
-            },
-            "runtime": film.time,
-            "title": film.info.title,
-            "total_rating": film.rating,
-            "writers": film.screenwriters
-          },
-          "user_details": {
-            "watchlist": film.isWatchlist,
-            "already_watched": film.isViewed,
-            "favorite": film.isFavorite,
-            "watching_date": film.watchedData
-          }
-        }
-    );
-
-    delete adaptedFilm.actors;
-    delete adaptedFilm.age;
-    delete adaptedFilm.info;
-    delete adaptedFilm.description;
-    delete adaptedFilm.regisseur;
-    delete adaptedFilm.genre;
-    delete adaptedFilm.date;
-    delete adaptedFilm.country;
-    delete adaptedFilm.time;
-    delete adaptedFilm.rating;
-    delete adaptedFilm.screenwriters;
-    delete adaptedFilm.isWatchlist;
-    delete adaptedFilm.isViewed;
-    delete adaptedFilm.isFavorite;
-    delete adaptedFilm.watchedData;
-
-    return adaptedFilm;
+    this._notify(updateType, update);
   }
 }

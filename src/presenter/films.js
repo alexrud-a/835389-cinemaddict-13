@@ -207,7 +207,7 @@ export default class FilmsPresenter {
   }
 
   _handlePopupRemoveComment(updatedFilm, comment) {
-    this._commentsModel.prepareCommentForDeletion(updatedFilm, comment);
+    this._commentsModel.prepareCommentForDeletion(comment, updatedFilm);
     this._api.deleteComment(comment).then(() => {
       this._commentsModel.removeComment(comment, updatedFilm);
     });

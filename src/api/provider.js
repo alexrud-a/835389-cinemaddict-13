@@ -1,6 +1,5 @@
-
-import FilmsModel from "../model/films";
-import {isOnline} from '../utils.js';
+import Films from "../model/films";
+import {isOnline} from "../utils";
 
 const getSyncedFilms = (items) => {
   return items.filter(({success}) => success)
@@ -25,7 +24,7 @@ export default class Provider {
     if (isOnline()) {
       return this._api.getFilms()
         .then((films) => {
-          const items = createStoreStructure(films.map(FilmsModel.adaptToServer));
+          const items = createStoreStructure(films.map(Films.adaptToServer));
           this._store.setItems(items);
           return films;
         });
@@ -33,37 +32,7 @@ export default class Provider {
 
     const storeFilms = Object.values(this._store.getItems());
 
-    return Promise.resolve(storeFilms.map(FilmsModel.adaptToClient));
-  }
-
-  updateFilm(film) {
-    if (isOnline()) {
-      return this._api.updateFilm(film)
-        .then((updatedFilm) => {
-          this._store.setItem(updatedFilm.id, FilmsModel.adaptToServer(updatedFilm));
-          return updatedFilm;
-        });
-    }
-
-    this._store.setItem(film.id, FilmsModel.adaptToServer(Object.assign({}, film)));
-
-    return Promise.resolve(film);
-  }
-
-  deleteComment(comment) {
-    if (isOnline()) {
-      return this._api.deleteComment(comment);
-    }
-
-    return Promise.reject(new Error(`Delete comment failed`));
-  }
-
-  addComment(comment, film) {
-    if (isOnline()) {
-      return this._api.addComment(comment, film);
-    }
-
-    return Promise.reject(new Error(`Add comment failed`));
+    return Promise.resolve(storeFilms.map(Films.adaptToClient));
   }
 
   getComments(film) {
@@ -72,6 +41,36 @@ export default class Provider {
     }
 
     return Promise.reject(new Error(`Upload comment failed`));
+  }
+
+  updateFilm(film) {
+    if (isOnline()) {
+      return this._api.updateFilm(film)
+        .then((updatedFilm) => {
+          this._store.setItem(updatedFilm.id, Films.adaptFilmToServer(updatedFilm));
+          return updatedFilm;
+        });
+    }
+
+    this._store.setItem(film.id, Films.adaptFilmToServer(Object.assign({}, film)));
+
+    return Promise.resolve(film);
+  }
+
+  createComment(comment, film) {
+    if (isOnline()) {
+      return this._api.createComment(comment, film);
+    }
+
+    return Promise.reject(new Error(`Add comment failed`));
+  }
+
+  deleteComment(comment) {
+    if (isOnline()) {
+      return this._api.deleteComment(comment);
+    }
+
+    return Promise.reject(new Error(`Delete comment failed`));
   }
 
   sync() {

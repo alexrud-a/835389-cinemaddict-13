@@ -1,69 +1,94 @@
 import dayjs from "dayjs";
 import Base from "./abstract";
-import {formatDuration} from "./../utils";
+import {capitilizeString, getDuration} from "../utils";
 
-const createCardFilmTemplate = (film) => {
-  const {id, info, time, date, rating, isFavorite, isViewed, isWatchlist, genre, comments, description} = film;
+const YEAR_FORMAT = `YYYY`;
 
-  const year = dayjs(date).format(`YYYY`);
-
-  const watchlistClassName = isWatchlist
-    ? `film-card__controls-item--active`
-    : ``;
-
-  const watchedClassName = isViewed
-    ? `film-card__controls-item--active`
-    : ``;
-
-  const favoriteClassName = isFavorite
-    ? `film-card__controls-item--active`
-    : ``;
-
-  const sliceDescription = () => {
-    let slicedDescription;
-    if (description.length > 140) {
-      slicedDescription = description.slice(0, 139) + `...`;
-    } else {
-      slicedDescription = description;
-    }
-    return slicedDescription;
-  };
-
-  return `<article class="film-card" id="${id}">
-          <h3 class="js-open-popup film-card__title">${info.title}</h3>
-          <p class="film-card__rating">${rating}</p>
-          <p class="film-card__info">
-            <span class="film-card__year">${year}</span>
-            <span class="film-card__duration">${formatDuration(time)}</span>
-            <span class="film-card__genre">${genre[0]}</span>
-          </p>
-          <img src="${info.poster}" alt="" class="js-open-popup film-card__poster">
-          <p class="film-card__description">${sliceDescription()}</p>
-          <a class="js-open-popup film-card__comments">${comments.length} comments</a>
-          <div class="film-card__controls">
-            <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist ${watchlistClassName}" type="button" data-type="isWatchlist">Add to watchlist</button>
-            <button class="film-card__controls-item button film-card__controls-item--mark-as-watched ${watchedClassName}" type="button" data-type="isViewed">Mark as watched</button>
-            <button class="film-card__controls-item button film-card__controls-item--favorite ${favoriteClassName}" type="button" data-type="isFavorite">Mark as favorite</button>
-          </div>
-        </article>`;
+const getShortDesc = (desc) => {
+  const DESC_LENGTH = 140;
+  return desc.length < DESC_LENGTH ? desc : `${desc.slice(0, DESC_LENGTH - 1)}&hellip;`;
 };
 
-export default class CardFilm extends Base {
+export const createFilmCardTemplate = (film) => {
+  const {
+    title,
+    totalRating,
+    releaseDate,
+    runtime,
+    genres,
+    posterUrl,
+    desc,
+    comments,
+    isWatchList,
+    isWatched,
+    isFavorite,
+  } = film;
+
+  const {hours, mins} = getDuration(runtime);
+  const duration = `${hours}h ${mins}m`;
+
+  return `<article class="film-card">
+    <h3 class="film-card__title">${capitilizeString(title)}</h3>
+    <p class="film-card__rating">${totalRating}</p>
+    <p class="film-card__info">
+      <span class="film-card__year">${dayjs(releaseDate).format(YEAR_FORMAT)}</span>
+      <span class="film-card__duration">${duration}</span>
+      <span class="film-card__genre">${genres[0]}</span>
+    </p>
+    <img src=${posterUrl} alt="" class="film-card__poster">
+    <p class="film-card__description">${getShortDesc(desc)}</p>
+    <a class="film-card__comments">${comments.length} comments</a>
+    <div class="film-card__controls">
+      <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist ${isWatchList ? `film-card__controls-item--active` : ``}" type="button" data-type="isWatchlist">
+        Add to watchlist
+      </button>
+      <button class="film-card__controls-item button film-card__controls-item--mark-as-watched ${isWatched ? `film-card__controls-item--active` : ``}" type="button" data-type="isWatched">
+        Mark as watched
+      </button>
+      <button class="film-card__controls-item button film-card__controls-item--favorite ${isFavorite ? `film-card__controls-item--active` : ``}" type="button" data-type="isFavorite">
+        Mark as favorite
+      </button>
+    </div>
+  </article>`;
+};
+
+export default class FilmCard extends Base {
   constructor(film) {
     super();
-    this._editClickHandler = this._editClickHandler.bind(this);
     this._film = film;
+
+    this._clickHandler = this._clickHandler.bind(this);
+    this._editClickHandler = this._editClickHandler.bind(this);
+  }
+
+  _getPosterElement() {
+    return this.getElement().querySelector(`.film-card__poster`);
+  }
+
+  _getTitleElement() {
+    return this.getElement().querySelector(`.film-card__title`);
+  }
+
+  _getCommentsElement() {
+    return this.getElement().querySelector(`.film-card__comments`);
   }
 
   getTemplate() {
-    return createCardFilmTemplate(this._film);
+    return createFilmCardTemplate(this._film);
+  }
+
+  _clickHandler(evt) {
+    evt.preventDefault();
+    this._callback.click();
   }
 
   setClickHandler(callback) {
     this._callback.click = callback;
-    for (let btn of this.getElement().querySelectorAll(`.js-open-popup`)) {
-      btn.addEventListener(`click`, this._clickHandler);
-    }
+    const elements = [this._getPosterElement(), this._getTitleElement(), this._getCommentsElement()];
+
+    elements.forEach((el) => {
+      el.addEventListener(`click`, this._clickHandler);
+    });
   }
 
   _editClickHandler(evt) {

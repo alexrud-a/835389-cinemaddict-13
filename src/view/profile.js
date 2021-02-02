@@ -1,20 +1,19 @@
-import AbstractView from "./abstract";
-import {profileRating} from "./../utils";
+import Base from "./abstract";
 
-const createProfileTemplate = (count) => {
+const createProfileTemplate = (rating) => {
   return `<section class="header__profile profile">
-    <p class="profile__rating">${ profileRating(count) }</p>
+    <p class="profile__rating">${rating}</p>
     <img class="profile__avatar" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
-    </section>`;
+  </section>`;
 };
 
-export default class Profile extends AbstractView {
-  constructor(count) {
+export default class Profile extends Base {
+  constructor(rating) {
     super();
-    this._count = count;
+    this._rating = rating;
   }
 
   getTemplate() {
-    return createProfileTemplate(this._count);
+    return createProfileTemplate(this._rating);
   }
 }

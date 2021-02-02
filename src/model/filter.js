@@ -1,36 +1,18 @@
 import Observer from "./observer";
+import {FilterType} from "../const";
 
 export default class Filter extends Observer {
   constructor() {
     super();
-    this._sort = null;
-    this._sortType = {};
+    this._activeFilter = FilterType.ALL;
   }
 
-  setSortType(sort, filter, stats) {
-    this._sortType = {
-      sort,
-      filter,
-      stats
-    };
-    this._notifyChanges();
+  setFilter(updateType, filter) {
+    this._activeFilter = filter;
+    this._notify(updateType, filter);
   }
 
-  getSortType() {
-    return this._sortType;
+  getFilter() {
+    return this._activeFilter;
   }
-
-  setSort(sort) {
-    this._sort = sort;
-    this._notifyChanges();
-  }
-
-  getSort() {
-    return this._sort;
-  }
-
-  _notifyChanges() {
-    this._notify({sortType: this._sortType, sort: this._sort});
-  }
-
 }

@@ -1,16 +1,15 @@
 import Films from "../model/films";
-import CommentsModel from "../model/comments";
 
 const Method = {
   GET: `GET`,
   PUT: `PUT`,
   POST: `POST`,
-  DELETE: `DELETE`
+  DELETE: `DELETE`,
 };
 
 const SuccessHTTPStatusRange = {
   MIN: 200,
-  MAX: 299
+  MAX: 299,
 };
 
 export default class Api {
@@ -19,50 +18,66 @@ export default class Api {
     this._authorization = authorization;
   }
 
+  static checkStatus(response) {
+    if (response.status < SuccessHTTPStatusRange.MIN || response.status >= SuccessHTTPStatusRange.MAX) {
+      throw new Error();
+    }
+
+    return response;
+  }
+
+  static catchError(err) {
+    throw new Error(err);
+  }
+
+  static toJSON(response) {
+    return response.json();
+  }
+
   getFilms() {
     return this._load({url: `movies`})
       .then(Api.toJSON)
-      .then((films) => films.map(Films.adaptToClient));
+      .then((films) => films.map((film) => Films.adaptFilmToClient(film)));
   }
 
-  getComments(film) {
-    return this._load({url: `comments/` + film.id})
+  getComments(filmId) {
+    return this._load({url: `comments/${filmId}`})
       .then(Api.toJSON)
-      .then((comments) => comments.map(CommentsModel.adaptToClient));
+      .then((comments) => comments.map((comment) => Films.adaptCommentToClient(comment)));
   }
 
   updateFilm(film) {
     return this._load({
       url: `movies/${film.id}`,
       method: Method.PUT,
-      body: JSON.stringify(Films.adaptToServer(film)),
-      headers: new Headers({"Content-Type": `application/json`})
+      body: JSON.stringify(Films.adaptFilmToServer(film)),
+      headers: new Headers({"Content-Type": `application/json`}),
     })
       .then(Api.toJSON)
-      .then(Films.adaptToClient);
+      .then(Films.adaptFilmToClient);
   }
 
-  addComment(comment, film) {
+  createComment(filmId, comment) {
     return this._load({
-      url: `comments/` + film.id,
+      url: `comments/${filmId}`,
       method: Method.POST,
-      body: JSON.stringify(CommentsModel.adaptToServer(comment)),
-      headers: new Headers({"Content-Type": `application/json`})
+      body: JSON.stringify(Films.adaptCommentToServer(comment)),
+      headers: new Headers({"Content-Type": `application/json`}),
     })
       .then(Api.toJSON)
-      .then(CommentsModel.adaptToClientAddCommented);
+      .then(({movie}) => Films.adaptFilmToClient(movie));
   }
 
-  deleteComment(comment) {
+  deleteComment(commentId) {
     return this._load({
-      url: `comments/${comment.id}`,
-      method: Method.DELETE
+      url: `comments/${commentId}`,
+      method: Method.DELETE,
     });
   }
 
   sync(data) {
     return this._load({
-      url: `movies/sync`,
+      url: `/movies/sync`,
       method: Method.POST,
       body: JSON.stringify(data),
       headers: new Headers({"Content-Type": `application/json`})
@@ -70,38 +85,9 @@ export default class Api {
       .then(Api.toJSON);
   }
 
-  _load({
-    url,
-    method = Method.GET,
-    body = null,
-    headers = new Headers()
-  }) {
+  _load({url, method = Method.GET, body = null, headers = new Headers()}) {
     headers.append(`Authorization`, this._authorization);
 
-    return fetch(
-        `${this._endPoint}/${url}`,
-        {method, body, headers}
-    )
-      .then(Api.checkStatus)
-      .catch(Api.catchError);
-  }
-
-  static checkStatus(response) {
-    if (
-      response.status < SuccessHTTPStatusRange.MIN ||
-      response.status > SuccessHTTPStatusRange.MAX
-    ) {
-      throw new Error(`${response.status}: ${response.statusText}`);
-    }
-
-    return response;
-  }
-
-  static toJSON(response) {
-    return response.json();
-  }
-
-  static catchError(err) {
-    throw err;
+    return fetch(`${this._endPoint}/${url}`, {method, body, headers}).then(Api.checkStatus).catch(Api.catchError);
   }
 }
