@@ -86,13 +86,15 @@ export default class FilmPopupPresenter {
     this._changeData(this.getPatchedFilm({[type]: !this._film[type]}));
   }
 
-  _removeFilmComment(evt) {
+  _removeFilmComment(evt, comment) {
     this._posScroll = this.getPositionScroll();
-    let commentId = evt.target.closest(`.film-details__comment`).getAttribute(`id`);
-    let commentInd = this._comments.findIndex((item) => item.id === commentId);
-    let filmsCommentInd = this._film.comments.findIndex((item) => item.id === commentId);
+    // let commentId = evt.target.closest(`.film-details__comment`).getAttribute(`id`);
+    // let commentInd = this._comments.findIndex((item) => item.id === commentId);
+    let filmsCommentInd = this._film.comments.findIndex((item) => item.id === comment.id);
     this._film.comments.splice(filmsCommentInd, 1);
-    this._deleteComment(Object.assign({}, this._film, this.getPatchedFilm({comments: this._film.comments})), this._comments[commentInd]);
+    comment.isDeleting = true;
+
+    this._deleteComment(Object.assign({}, this._film, this.getPatchedFilm({comments: this._film.comments})), comment);
   }
 
   _addFilmCommentEmotion(evt) {

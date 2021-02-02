@@ -5,7 +5,7 @@ import Smart from "./smart";
 import {createElement, render, RenderPosition} from "../utils";
 
 const createCommentTemplate = (comment) => {
-  const {info: {emotion, text, author}, date, id} = comment;
+  const {info: {emotion, text, author}, date, id, isDeleting} = comment;
 
   return `<li class="film-details__comment" id="${id}">
             <span class="film-details__comment-emoji">
@@ -16,7 +16,7 @@ const createCommentTemplate = (comment) => {
               <p class="film-details__comment-info">
                 <span class="film-details__comment-author">${author}</span>
                 <span class="film-details__comment-day">${dayjs().to(dayjs(date))}</span>
-                <button class="film-details__comment-delete">Delete</button>
+                <button class="film-details__comment-delete" ${isDeleting ? `disabled` : ``}">${isDeleting ? `Deleting...` : `Delete`}</button>
               </p>
             </div>
           </li>`;
@@ -114,7 +114,9 @@ export default class Comments extends Smart {
 
   _deleteClickComment(evt) {
     evt.preventDefault();
-    this._callback.removeClick(evt);
+    const commentId = evt.target.closest(`.film-details__comment`).getAttribute(`id`);
+    const comment = this._comments.find((item) => item.id === commentId);
+    this._callback.removeClick(evt, comment);
   }
 
   setDeleteCommentHandler(callback) {

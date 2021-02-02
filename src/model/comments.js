@@ -1,5 +1,6 @@
 import Observer from "./observer";
 import Films from "./films";
+import {updateItem} from "../utils";
 
 export default class CommentsModel extends Observer {
   constructor() {
@@ -26,10 +27,24 @@ export default class CommentsModel extends Observer {
     const index = this._commentList.findIndex((comment) => comment.id === removed.id);
 
     if (index === -1) {
-      throw new Error(`Can't update unexisting task`);
+      throw new Error(`Can't update unexisting comment`);
     }
 
     this._commentList.splice(index, 1);
+    this._notify(this._commentList, film);
+  }
+
+  prepareCommentForDeletion(removed, film) {
+    const index = this._commentList.findIndex((comment) => comment.id === removed.id);
+
+    if (index === -1) {
+      throw new Error(`Can't update unexisting comment`);
+    }
+
+    this._commentList = updateItem(this._commentList, removed);
+
+    Object.assign({}, film, {comments: film.comments});
+
     this._notify(this._commentList, film);
   }
 
