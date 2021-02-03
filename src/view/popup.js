@@ -298,7 +298,7 @@ export default class Popup extends Smart {
       .querySelector(`.film-details__comment-input`)
       .addEventListener(`input`, this._inputCommentHandler);
 
-    for (let control of this.getElement().querySelectorAll(`.film-details__control-input`)) {
+    for (const control of this.getElement().querySelectorAll(`.film-details__control-input`)) {
       control.addEventListener(`change`, this._editClickHandler);
     }
   }
@@ -350,7 +350,7 @@ export default class Popup extends Smart {
 
   setEditClickHandler(callback) {
     this._callback.editClick = callback;
-    for (let control of document.querySelectorAll(`.film-details__comment-input`)) {
+    for (const control of document.querySelectorAll(`.film-details__comment-input`)) {
       control.addEventListener(`change`, this._editClickHandler);
     }
   }

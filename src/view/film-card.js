@@ -98,7 +98,7 @@ export default class FilmCard extends Base {
 
   setEditClickHandler(callback) {
     this._callback.editClick = callback;
-    for (let control of this.getElement().querySelectorAll(`.film-card__controls-item`)) {
+    for (const control of this.getElement().querySelectorAll(`.film-card__controls-item`)) {
       control.addEventListener(`click`, this._editClickHandler);
     }
   }

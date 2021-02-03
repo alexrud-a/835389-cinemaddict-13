@@ -41,7 +41,7 @@ export default class FilmCard {
   }
 
   _handleClickFilmInfo(evt) {
-    let type = evt.target.getAttribute(`data-type`);
+    const type = evt.target.getAttribute(`data-type`);
     this._changeFilm(
         UserAction.UPDATE_FILM,
         UpdateType.MINOR,

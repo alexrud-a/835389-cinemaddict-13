@@ -124,7 +124,7 @@ export default class FilmsPresenter {
   }
 
   _renderFilmsContainer() {
-    let prevList = this._filmList;
+    const prevList = this._filmList;
     this._filmList = new FilmList();
 
     if (prevList) {
@@ -145,7 +145,7 @@ export default class FilmsPresenter {
   }
 
   _renderStats() {
-    let prevStats = this._stats;
+    const prevStats = this._stats;
     this._stats = new Stats(this._sourcedFilms, `ALL_TIME`, profileRating(this._filterModel.getSort().history));
     if (prevStats) {
       replace(this._stats, prevStats);
