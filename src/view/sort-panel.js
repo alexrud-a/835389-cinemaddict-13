@@ -1,43 +1,44 @@
-import Smart from "./smart";
+import Base from "./abstract";
+import {SortTypes} from "../const";
 
-const createSortPanelTemplate = (sortType) => {
-  const defaultClassName = (sortType === `default`)
-    ? `sort__button--active`
-    : ``;
-
-  const dateClassName = (sortType === `date`)
-    ? `sort__button--active`
-    : ``;
-
-  const ratingClassName = (sortType === `rating`)
-    ? `sort__button--active`
-    : ``;
+const createSortTemplate = (sortType) => {
+  const activeClass = `sort__button--active`;
 
   return `<ul class="sort">
-    <li><a href="#" class="sort__button ${defaultClassName}" data-sort="default">Sort by default</a></li>
-    <li><a href="#" class="sort__button ${dateClassName}" data-sort="date">Sort by date</a></li>
-    <li><a href="#" class="sort__button ${ratingClassName}" data-sort="rating">Sort by rating</a></li>
+    <li><a href="#" class="sort__button ${sortType === SortTypes.DEFAULT ? activeClass : ``}" data-sort-type="${
+  SortTypes.DEFAULT
+}">Sort by default</a></li>
+    <li><a href="#" class="sort__button ${sortType === SortTypes.DATE ? activeClass : ``}" data-sort-type="${
+  SortTypes.DATE
+}">Sort by date</a></li>
+    <li><a href="#" class="sort__button ${sortType === SortTypes.RATING ? activeClass : ``}" data-sort-type="${
+  SortTypes.RATING
+}">Sort by rating</a></li>
   </ul>`;
 };
 
-export default class SortPanel extends Smart {
+export default class SortPanel extends Base {
   constructor(sortType) {
     super();
     this._sortType = sortType;
+    this._sortTypeChangeHandler = this._sortTypeChangeHandler.bind(this);
   }
 
   getTemplate() {
-    return createSortPanelTemplate(this._sortType);
+    return createSortTemplate(this._sortType);
   }
 
-  getActiveMenuLink() {
-    return super.getElement().querySelector(`.sort__button--active`);
-  }
-
-  setClickHandler(callback) {
-    this._callback.click = callback;
-    for (let btn of this.getElement().querySelectorAll(`.sort__button`)) {
-      btn.addEventListener(`click`, this._clickHandler);
+  _sortTypeChangeHandler(evt) {
+    if (evt.target.tagName !== `A`) {
+      return;
     }
+
+    evt.preventDefault();
+    this._callback.sortTypeChange(evt.target.dataset.sortType);
+  }
+
+  setSortTypeChangeClickHandler(callback) {
+    this._callback.sortTypeChange = callback;
+    this.getElement().addEventListener(`click`, this._sortTypeChangeHandler);
   }
 }

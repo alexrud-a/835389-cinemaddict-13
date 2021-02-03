@@ -1,43 +1,50 @@
+import FilmCardView from "../view/film-card";
 import {render, replace, remove, RenderPosition} from "../utils";
-import CardFilm from "../view/film-card";
+import {UserAction, UpdateType} from "../const";
 
-export default class FilmCardPresenter {
-  constructor(filmContainer, changeData, showPopup) {
-    this._filmContainer = filmContainer;
-    this._film = null;
-    this._card = null;
-    this._changeData = changeData;
-    this._showPopup = showPopup;
+export default class FilmCard {
+  constructor(container, openDetails, changeFilm) {
+    this._container = container;
+    this._openDetails = openDetails;
+    this._changeFilm = changeFilm;
+
+    this._filmCardComponent = null;
+
+    this._handleOnFilmCardClick = this._handleOnFilmCardClick.bind(this);
+    this._handleClickFilmInfo = this._handleClickFilmInfo.bind(this);
   }
 
   init(film) {
     this._film = film;
 
-    const prevCard = this._card;
-    this._card = new CardFilm(this._film);
-    this._card.setClickHandler(() => this._showPopup(this._film));
-    this._card.setEditClickHandler((evt) => this._clickFilmInfo(evt));
+    this._prevFilmCardComponent = this._filmCardComponent;
+    this._filmCardComponent = new FilmCardView(this._film);
 
-    if (prevCard) {
-      replace(this._card, prevCard);
-    } else {
-      this._renderCard();
+    this._filmCardComponent.setClickHandler(this._handleOnFilmCardClick);
+    this._filmCardComponent.setEditClickHandler((evt) => this._handleClickFilmInfo(evt));
+
+    if (this._prevFilmCardComponent === null) {
+      render(this._container, this._filmCardComponent, RenderPosition.BEFOREEND);
       return;
     }
 
-    remove(prevCard);
-  }
-
-  _renderCard() {
-    render(this._filmContainer, this._card.getElement(), RenderPosition.BEFOREEND);
-  }
-
-  _clickFilmInfo(evt) {
-    let type = evt.target.getAttribute(`data-type`);
-    this._changeData(Object.assign({}, this._film, {[type]: !this._film[type]}));
+    replace(this._filmCardComponent, this._prevFilmCardComponent);
+    remove(this._prevFilmCardComponent);
   }
 
   destroy() {
-    remove(this._card);
+    remove(this._filmCardComponent);
+  }
+
+  _handleOnFilmCardClick() {
+    this._openDetails(this._film.id);
+  }
+
+  _handleClickFilmInfo(evt) {
+    let type = evt.target.getAttribute(`data-type`);
+    this._changeFilm(
+        UserAction.UPDATE_FILM,
+        UpdateType.MINOR,
+        Object.assign({}, this._film, {[type]: !this._film[type]}));
   }
 }

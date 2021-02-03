@@ -206,9 +206,17 @@ export default class FilmsPresenter {
       });
   }
 
-  _handlePopupRemoveComment(updatedFilm) {
-    this._filmsModel.updateFilm(updatedFilm);
-    this._popup.init(updatedFilm);
+  _handlePopupRemoveComment(updatedFilm, comment) {
+    this._commentsModel.prepareCommentForDeletion(comment, updatedFilm);
+    this._api.deleteComment(comment).then(() => {
+      this._commentsModel.removeComment(comment, updatedFilm);
+    });
+
+    this._api.updateFilm(updatedFilm).then((update) => {
+      this._filmsModel.updateFilm(update);
+    });
+
+    this._popup.init(updatedFilm, this._commentsModel.getCommentsFilm());
   }
 
   _handleStatsDisplay() {
@@ -223,9 +231,12 @@ export default class FilmsPresenter {
     });
   }
 
-  _handleAddComment(updatedFilm) {
-    this._filmsModel.updateFilm(updatedFilm);
-    this._popup.init(updatedFilm);
+  _handleAddComment(film, comment) {
+    this._api.addComment(comment, film).then((update) => {
+      this._commentsModel.addComment(update[1], update[0]);
+      this._filmsModel.updateFilm(update[0]);
+      this._popup.init(update[0], this._commentsModel.getCommentsFilm());
+    });
   }
 
   _clearList() {

@@ -1,123 +1,168 @@
+import dayjs from "dayjs";
 import Base from "./view/abstract";
+import {FilterType} from "./const";
+import isBetween from "dayjs/plugin/isBetween";
+import {StatsFilterType} from "./const";
 
-const UserRank = {
-  NOVICE: `Novice`,
-  FAN: `Fan`,
-  MOVIE_BAFF: `Movie Buff`
+dayjs.extend(isBetween);
+
+export const capitilizeString = (string) => {
+  return string
+    .split(` `)
+    .map((word) => {
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    })
+    .join(` `);
 };
 
-export const formatDuration = (time) => {
-  let hours = Math.trunc(time / 60);
-  let minutes = time % 60;
-  return hours + `h ` + minutes + ` m`;
+export const getDuration = (minutes) => {
+  const date1 = dayjs();
+  const date2 = date1.add(minutes, `minute`);
+
+  const hours = date2.diff(date1, `hour`);
+  const mins = date2.subtract(hours, `hour`).diff(date1, `minute`);
+
+  return {
+    hours,
+    mins,
+  };
 };
 
-export const profileRating = (count) => {
-  if (count > 1 && count <= 10) {
-    return UserRank.NOVICE;
-  } else if (count > 10 && count <= 20) {
-    return UserRank.FAN;
-  } else {
-    return UserRank.MOVIE_BAFF;
-  }
+export const isOnline = () => {
+  return window.navigator.onLine;
 };
 
-export const StatPeriodMap = {
-  ALL_TIME: `all-time`,
-  TODAY: `today`,
-  WEEK: `week`,
-  MONTH: `month`,
-  YEAR: `year`
+export const sortFilmDateDown = (filmA, filmB) => {
+  const dateA = dayjs(filmA.releaseDate);
+  const dateB = dayjs(filmB.releaseDate);
+
+  return dateB.diff(dateA);
+};
+
+export const sortFilmRatingDown = (filmA, filmB) => {
+  return filmB.totalRating - filmA.totalRating;
+};
+
+export const filter = {
+  [FilterType.ALL]: (films) => films.slice(),
+  [FilterType.WATCHLIST]: (films) => films.filter((film) => film.isWatchList),
+  [FilterType.HISTORY]: (films) => films.filter((film) => film.isWatched),
+  [FilterType.FAVORITES]: (films) => films.filter((film) => film.isFavorite),
 };
 
 export const RenderPosition = {
   AFTERBEGIN: `afterbegin`,
-  BEFOREEND: `beforeend`
+  BEFOREEND: `beforeend`,
 };
 
-export const render = (container, element, place) => {
+export const renderTemplate = (container, template, place) => {
+  if (container instanceof Base) {
+    container = container.getElement();
+  }
+
+  container.insertAdjacentHTML(place, template);
+};
+
+export const render = (container, child, place) => {
+  if (container instanceof Base) {
+    container = container.getElement();
+  }
+
+  if (child instanceof Base) {
+    child = child.getElement();
+  }
+
   switch (place) {
     case RenderPosition.AFTERBEGIN:
-      container.prepend(element);
+      container.prepend(child);
       break;
     case RenderPosition.BEFOREEND:
-      container.append(element);
+      container.append(child);
       break;
   }
+};
+
+export const createElement = (template) => {
+  const container = document.createElement(`div`);
+  container.innerHTML = template;
+
+  return container.firstChild;
+};
+
+export const remove = (component) => {
+  if (component === null) {
+    return;
+  }
+
+  if (!(component instanceof Base)) {
+    throw new Error(`Can remove only components`);
+  }
+
+  component.getElement().remove();
+  component.removeElement();
 };
 
 export const replace = (newChild, oldChild) => {
-  if (oldChild instanceof Base) {
-    oldChild = oldChild.getElement();
-  }
-
   if (newChild instanceof Base) {
     newChild = newChild.getElement();
   }
 
-  if (oldChild === null || newChild === null) {
-    throw new Error(`Can't replace unexisting elements`);
+  if (oldChild instanceof Base) {
+    oldChild = oldChild.getElement();
   }
 
   const parent = oldChild.parentElement;
 
+  if (!parent || !newChild || !oldChild) {
+    throw new Error(`Can't replace unexisting elements`);
+  }
+
   parent.replaceChild(newChild, oldChild);
 };
 
-export const createElement = (template) => {
-  const newElement = document.createElement(`div`); // 1
-  newElement.innerHTML = template;
+export const countFilmsByGenres = (films) => {
+  const genres = films.map((film) => [...film.genres]).flat();
+  const uniqGenres = [...new Set(genres)];
+  const result = {};
 
-  return newElement.firstChild;
+  uniqGenres.forEach((genre) => {
+    const total = films.reduce((counter, film) => {
+      const isExist = film.genres.includes(genre);
+      return isExist ? counter + 1 : counter;
+    }, 0);
+
+    result[genre] = total;
+  });
+
+  return result;
 };
 
-export const getRandomInteger = (a = 0, b = 1) => {
-  const lower = Math.ceil(Math.min(a, b));
-  const upper = Math.floor(Math.max(a, b));
-  return Math.floor(lower + Math.random() * (upper - lower + 1));
-};
-
-export const compareValues = (key, order) => {
-  return function innerSort(a, b) {
-    if (!a.hasOwnProperty(key) || !b.hasOwnProperty(key)) {
-      return 0;
+export const filterWatchedFilmsInDateRange = (films, dateFrom, dateTo) => {
+  return films.filter((film) => {
+    if (!film.watchingDate) {
+      return false;
     }
 
-    const varA = (typeof a[key] === `string`)
-      ? a[key].toUpperCase() : a[key];
-    const varB = (typeof b[key] === `string`)
-      ? b[key].toUpperCase() : b[key];
-
-    let comparison = 0;
-    if (varA > varB) {
-      comparison = 1;
-    } else if (varA < varB) {
-      comparison = -1;
+    if (
+      dayjs(film.watchingDate).isSame(dateFrom) ||
+      dayjs(film.watchingDate).isBetween(dateFrom, dateTo) ||
+      dayjs(film.watchingDate).isSame(dateTo)
+    ) {
+      return true;
     }
-    return (
-      (order === `desc`) ? (comparison * -1) : comparison
-    );
-  };
+
+    return false;
+  });
 };
 
-export const updateItem = (items, update) => {
-  const index = items.findIndex((item) => item.id === update.id);
-
-  if (index === -1) {
-    return items;
-  }
-
-  return [
-    ...items.slice(0, index),
-    update,
-    ...items.slice(index + 1)
-  ];
-};
-
-export const remove = (component) => {
-  if (!(component instanceof Base)) {
-    throw new Error(`Can remove only components`);
-  }
-  component.getElement().remove();
-  component.removeElement();
+export const filterInRange = {
+  [StatsFilterType.ALL_TIME]: (films) => films.filter((film) => film.isWatched),
+  [StatsFilterType.TODAY]: (films) =>
+    filterWatchedFilmsInDateRange(films, dayjs().startOf(`day`).toDate(), dayjs().toDate()),
+  [StatsFilterType.WEEK]: (films) =>
+    filterWatchedFilmsInDateRange(films, dayjs().subtract(1, `week`).toDate(), dayjs().toDate()),
+  [StatsFilterType.MONTH]: (films) =>
+    filterWatchedFilmsInDateRange(films, dayjs().subtract(1, `month`).toDate(), dayjs().toDate()),
+  [StatsFilterType.YEAR]: (films) =>
+    filterWatchedFilmsInDateRange(films, dayjs().subtract(1, `year`).toDate(), dayjs().toDate()),
 };

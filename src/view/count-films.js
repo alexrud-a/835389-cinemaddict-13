@@ -1,16 +1,16 @@
-import AbstractView from "./abstract";
+import Base from "./abstract";
 
 const createFooterStatisticsTemplate = (count) => {
   return `<p>${count} movies inside</p>`;
 };
 
-export default class FooterStatistics extends AbstractView {
+export default class FooterStatistics extends Base {
   constructor(count) {
     super();
-    this._filmCount = count;
+    this._count = count;
   }
 
   getTemplate() {
-    return createFooterStatisticsTemplate(this._filmCount);
+    return createFooterStatisticsTemplate(this._count);
   }
 }
