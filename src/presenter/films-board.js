@@ -12,6 +12,9 @@ import {SortTypes, UpdateType, UserAction} from "../const";
 const FILMS_PER_STEP = 5;
 const EXTRA_FILM_COUNT = 2;
 
+const Esc = `Esc`;
+const Escape = `Escape`;
+
 const FilmsList = {
   ALL: `ALL`,
   TOP_RATED: `TOP_RATED`,
@@ -112,7 +115,7 @@ export default class FilmsBoard {
   }
 
   _handleEscKeyDown(evt) {
-    if (evt.key === `Escape` || evt.key === `Esc`) {
+    if (evt.key === Escape || evt.key === Esc) {
       evt.preventDefault();
       this._closeFilmDetails();
     }

@@ -3,9 +3,9 @@ import Base from "./abstract";
 import {capitilizeString, getDuration} from "../utils";
 
 const YEAR_FORMAT = `YYYY`;
+const DESC_LENGTH = 140;
 
 const getShortDesc = (desc) => {
-  const DESC_LENGTH = 140;
   return desc.length < DESC_LENGTH ? desc : `${desc.slice(0, DESC_LENGTH - 1)}&hellip;`;
 };
 
